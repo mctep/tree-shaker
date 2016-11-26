@@ -1,9 +1,14 @@
 const listeners = Symbol('listeners');
 
-module.exports = class Store {
-	constructor(getState) {
-		this.getState = getState;
+module.exports = class Observable {
+	constructor(state) {
+		this.state = state;
 		this[listeners] = [];
+	}
+
+	setState(state) {
+		this.state = state;
+		this.dispatch();
 	}
 
 	subscribe(listener) {
@@ -20,7 +25,7 @@ module.exports = class Store {
 
 	dispatch() {
 		this[listeners].forEach((listener) => {
-			listener(this.getState);
+			listener(this.state);
 		});
 	}
 };

@@ -1,7 +1,7 @@
 const { expect } = require('chai');
-const denormalize = require('tree-shaker/lib/denormalize');
+const normalize = require('tree-shaker/lib/normalize');
 
-it('should make right denormalize', () => {
+it('should make right normalize', () => {
 	const item1 = {
 		id: '1',
 		parentId: null,
@@ -42,20 +42,13 @@ it('should make right denormalize', () => {
 		parentId: '2',
 	});
 
-	const rootNode = {
-		children: [node1, node3],
-		id: null,
-		parent: null,
-		parentId: null,
-	};
-
-	node1.parent = rootNode;
+	node1.parent = null;
 	node1.children = [node2];
 
 	node2.parent = node1;
 	node2.children = [node4];
 
-	node3.parent = rootNode;
+	node3.parent = null;
 	node3.children = [];
 
 	node4.parent = node2;
@@ -63,12 +56,20 @@ it('should make right denormalize', () => {
 
 	const input = [item1, item2, item3, item4];
 	const output = {
-		[denormalize.root]: rootNode,
-		1: node1,
-		2: node2,
-		3: node3,
-		4: node4,
+		index: {
+			1: node1,
+			2: node2,
+			3: node3,
+			4: node4,
+		},
+		list: [
+			node1,
+			node2,
+			node4,
+			node3,
+		],
+		root: [node1, node3],
 	};
 
-	expect(denormalize(input)).to.be.deep.equal(output);
+	expect(normalize(input)).to.be.deep.equal(output);
 });

@@ -1,16 +1,23 @@
-import Store from 'tree-shaker/lib/store';
+import Observable from 'tree-shaker/lib/observable';
 import Tree from 'tree-shaker/lib/tree-element';
-import denormalize from 'tree-shaker/lib/denormalize';
+import normalize from 'tree-shaker/lib/normalize';
 
 export default class TreeShaker {
 	constructor(container, options) {
-		const { nodesStore } = options;
+		const { nodes } = options;
+
+		this.nodes = new Observable(normalize(nodes.state));
+
+		nodes.subscribe((state) => {
+			this.nodes.setState(normalize(state));
+		});
 
 		this.container = container;
 
-		this.allNodesTree = new Tree({ store: nodesStore });
+		this.allNodesTree = new Tree({ nodes: this.nodes });
+
 		this.container.appendChild(this.allNodesTree.element);
 	}
 }
 
-export { Store, denormalize };
+export { Observable };

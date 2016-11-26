@@ -1,9 +1,9 @@
 /* eslint-env browser */
-import TreeShaker, { Store, denormalize } from 'tree-shaker';
+import TreeShaker, { Observable } from 'tree-shaker';
 
 const exampleDOMElement = document.getElementById('example');
 
-const nodes = denormalize([{
+const nodes = [{
 	id: '1',
 	parentId: null,
 }, {
@@ -15,14 +15,12 @@ const nodes = denormalize([{
 }, {
 	id: '4',
 	parentId: '2',
-}]);
+}];
 
-const nodesStore = new Store(() => {
-	return nodes;
-});
+const nodesObservable = new Observable(nodes);
 
 const treeShaker = new TreeShaker(exampleDOMElement, {
-	nodesStore,
+	nodes: nodesObservable,
 });
 
 treeShaker.toString();
