@@ -1,8 +1,28 @@
 /* eslint-env browser */
-import TreeShaker from 'tree-shaker';
+import TreeShaker, { Store, denormalize } from 'tree-shaker';
 
-const exampleNode = document.getElementById('example');
+const exampleDOMElement = document.getElementById('example');
 
-const treeShaker = new TreeShaker(exampleNode);
+const nodes = denormalize([{
+	id: '1',
+	parentId: null,
+}, {
+	id: '2',
+	parentId: '1',
+}, {
+	id: '3',
+	parentId: null,
+}, {
+	id: '4',
+	parentId: '2',
+}]);
+
+const nodesStore = new Store(() => {
+	return nodes;
+});
+
+const treeShaker = new TreeShaker(exampleDOMElement, {
+	nodesStore,
+});
 
 treeShaker.toString();
