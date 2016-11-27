@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const normalize = require('tree-shaker/lib/normalize');
+const normalize = require('lib/normalize');
 
 it('should make right normalize', () => {
 	const item1 = {

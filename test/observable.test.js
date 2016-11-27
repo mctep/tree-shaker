@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const Observable = require('tree-shaker/lib/observable');
+const Observable = require('lib/observable');
 
 describe('Observable', () => {
 	beforeEach(function() {
