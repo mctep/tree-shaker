@@ -2,7 +2,7 @@
 	height: 200px;
 }
 
-.list-all {
+.list {
 	height: 100%;
 	border: 1px solid blue;
 	overflow: auto;
@@ -20,6 +20,11 @@
 
 .node:hover {
 	background: #ccc;
+}
+
+.node.selected {
+	background: #3879d9;
+	color: #fff;
 }
 
 .buttons {
