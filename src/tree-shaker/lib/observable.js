@@ -6,11 +6,6 @@ module.exports = class Observable {
 		this[listeners] = [];
 	}
 
-	setState(state) {
-		this.state = state;
-		this.dispatch();
-	}
-
 	subscribe(listener) {
 		if (!this[listeners].includes(listener)) {
 			this[listeners].push(listener);
@@ -23,7 +18,8 @@ module.exports = class Observable {
 		};
 	}
 
-	dispatch() {
+	dispatch(state) {
+		this.state = state;
 		this[listeners].forEach((listener) => {
 			listener(this.state);
 		});

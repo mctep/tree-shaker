@@ -44,6 +44,9 @@ function makeLoaders() {
 			}]],
 		},
 		test: /\.js$/,
+	}, {
+		loaders: ['style-loader', 'css-loader'],
+		test: /\.css$/,
 	}];
 }
 
