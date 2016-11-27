@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const AvailableList = require('./available-list');
+const AvailableList = require('./components/available-list');
 const normalize = require('lib/normalize');
 const SelectedModel = require('tree-shaker/models/selected');
 

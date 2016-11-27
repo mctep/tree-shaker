@@ -1,7 +1,7 @@
 const $ = require('jquery');
 const without = require('lodash/without');
 const difference = require('lodash/difference');
-const Component = require('./components/component');
+const Component = require('./component');
 const getAncestorsCount = require('lib/get-ancestors-count');
 
 function delegate($element, selector, event) {
