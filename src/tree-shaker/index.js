@@ -1,7 +1,8 @@
 const $ = require('jquery');
 const AvailableList = require('./components/available-list');
+const ChooseButtons = require('./components/choose-buttons');
 const normalize = require('lib/normalize');
-const SelectedModel = require('tree-shaker/models/selected');
+const ArrayModel = require('tree-shaker/models/array');
 
 class TreeShaker {
 	constructor(props) {
@@ -13,11 +14,25 @@ class TreeShaker {
 		this.list = list;
 		this.root = root;
 
-		this.selected = new SelectedModel([]);
+		this.selected = new ArrayModel([]);
+		this.chosen = new ArrayModel([]);
 
 		this.$element = $('<div></div>');
 
 		this.renderAvailableList();
+		this.renderChooseButtons();
+	}
+
+	handleNodeSelect(id) {
+		this.selected.toggle(id);
+	}
+
+	handleMoveFromChosenClick() {
+		this.chosen.remove(this.selected.state);
+	}
+
+	handleMoveToChosenClick() {
+		this.chosen.add(this.selected.state);
 	}
 
 	renderAvailableList() {
@@ -32,8 +47,16 @@ class TreeShaker {
 		this.$element.append(availableList.$element);
 	}
 
-	handleNodeSelect(id) {
-		this.selected.toggle(id);
+	renderChooseButtons() {
+		const { selected, chosen } = this;
+		const cohooseButtons = new ChooseButtons({
+			chosen,
+			onMoveFromChosenClick: this.handleMoveFromChosenClick.bind(this),
+			onMoveToChosenClick: this.handleMoveToChosenClick.bind(this),
+			selected,
+		});
+
+		this.$element.append(cohooseButtons.$element);
 	}
 }
 

@@ -3,16 +3,7 @@ const without = require('lodash/without');
 const difference = require('lodash/difference');
 const Component = require('./component');
 const getAncestorsCount = require('lib/get-ancestors-count');
-
-function delegate($element, selector, event) {
-	return (handler) => {
-		$element.delegate(selector, event, handler);
-
-		return () => {
-			$element.undelegate(selector, event, handler);
-		};
-	};
-}
+const delegate = require('lib/jquery-delegate-observable');
 
 function getNodeHtml(node) {
 	const { id, title } = node;
