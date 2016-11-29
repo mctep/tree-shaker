@@ -14,8 +14,17 @@ class TreeShaker {
 		this.list = list;
 		this.root = root;
 
-		this.selected = new ArrayModel([]);
-		this.chosen = new ArrayModel([]);
+		this.available = {
+			disabled: new ArrayModel([]),
+			list: new ArrayModel(list),
+			selected: new ArrayModel([]),
+		};
+
+		this.chosen = {
+			disabled: new ArrayModel([]),
+			list: new ArrayModel([]),
+			selected: new ArrayModel([]),
+		};
 
 		this.$element = $('<div></div>');
 
@@ -24,36 +33,44 @@ class TreeShaker {
 	}
 
 	handleNodeSelect(id) {
-		this.selected.toggle(id);
+		this.available.selected.toggle(id);
 	}
 
 	handleMoveFromChosenClick() {
-		this.chosen.remove(this.selected.state);
+		const selected = this.chosen.selected.state;
+
+		this.chosen.list.remove(selected);
+		this.available.disabled.remove(selected);
 	}
 
 	handleMoveToChosenClick() {
-		this.chosen.add(this.selected.state);
+		const selected = this.available.selected.state;
+
+		this.chosen.list.add(selected);
+		this.available.selected.remove(selected);
+		this.available.disabled.add(selected);
 	}
 
 	renderAvailableList() {
-		const { index, list, selected } = this;
+		const { index, available } = this;
+
 		const availableList = new AvailableList({
+			disabled: available.disabled,
 			index,
-			list,
+			list: available.list,
 			onSelect: this.handleNodeSelect.bind(this),
-			selected,
+			selected: available.selected,
 		});
 
 		this.$element.append(availableList.$element);
 	}
 
 	renderChooseButtons() {
-		const { selected, chosen } = this;
 		const cohooseButtons = new ChooseButtons({
-			chosen,
+			availableSelected: this.available.selected,
+			chosenSelected: this.chosen.selected,
 			onMoveFromChosenClick: this.handleMoveFromChosenClick.bind(this),
 			onMoveToChosenClick: this.handleMoveToChosenClick.bind(this),
-			selected,
 		});
 
 		this.$element.append(cohooseButtons.$element);

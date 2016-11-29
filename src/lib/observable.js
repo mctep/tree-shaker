@@ -19,9 +19,11 @@ module.exports = class Observable {
 	}
 
 	dispatch(state) {
+		const oldState = this.state;
+
 		this.state = state;
 		this[listeners].forEach((listener) => {
-			listener(this.state);
+			listener(this.state, oldState);
 		});
 	}
 };

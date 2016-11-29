@@ -27,6 +27,11 @@
 	color: #fff;
 }
 
+.node.disabled {
+	background: transparent;
+	color: #ccc;
+}
+
 .choose-buttons {
 	display: inline-block;
 	vertical-align: middle;

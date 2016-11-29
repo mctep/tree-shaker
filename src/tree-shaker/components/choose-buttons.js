@@ -1,5 +1,4 @@
 const $ = require('jquery');
-const isEqual = require('lodash/isEqual');
 const Component = require('./component');
 const delegate = require('lib/jquery-delegate-observable');
 
@@ -24,8 +23,9 @@ class ChooseButtons extends Component {
 			moveToChosen: 'button button-move-to-chosen',
 		};
 
-		this.chosen = props.chosen;
-		this.selected = props.selected;
+		this.props = {};
+		this.props.availableSelected = props.availableSelected;
+		this.props.chosenSelected = props.chosenSelected;
 
 		this.$element = $(`<div class="${classNames.buttons}"></div>`);
 		this.$moveToChosenButton = $(getMoveToChosenButtonHtml(classNames));
@@ -34,8 +34,10 @@ class ChooseButtons extends Component {
 		this.$element.append(this.$moveToChosenButton);
 		this.$element.append(this.$moveFromChosenButton);
 
-		this.subscribe(this.chosen, this.handleStateChange.bind(this));
-		this.subscribe(this.selected, this.handleStateChange.bind(this));
+		this.subscribe(this.props.availableSelected,
+				this.handleAvailableChange.bind(this));
+		this.subscribe(this.props.chosenSelected,
+				this.handleChosenChange.bind(this));
 
 		this.subscribe(
 			delegate(this.$element, '[data-move-chosen=from]', 'click'),
@@ -47,27 +49,16 @@ class ChooseButtons extends Component {
 			() => { props.onMoveToChosenClick(); }
 		);
 
-		this.handleStateChange();
+		this.handleAvailableChange(this.props.availableSelected.state);
+		this.handleChosenChange(this.props.chosenSelected.state);
 	}
 
-	handleStateChange() {
-		const selected = this.selected.state;
-		const chosen = this.chosen.state;
+	handleAvailableChange(selected) {
+		this.$moveToChosenButton.attr({ disabled: !selected.length });
+	}
 
-		this.$moveFromChosenButton.attr({ disabled: true });
-		this.$moveToChosenButton.attr({ disabled: true });
-
-		if (!selected.length) {
-			return;
-		}
-
-		if (isEqual(selected, chosen)) {
-			this.$moveFromChosenButton.attr({ disabled: false });
-			this.$moveToChosenButton.attr({ disabled: true });
-		} else {
-			this.$moveFromChosenButton.attr({ disabled: true });
-			this.$moveToChosenButton.attr({ disabled: false });
-		}
+	handleChosenChange(selected) {
+		this.$moveFromChosenButton.attr({ disabled: !selected.length });
 	}
 }
 
