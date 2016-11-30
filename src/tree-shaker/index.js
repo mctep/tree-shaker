@@ -30,10 +30,15 @@ class TreeShaker {
 
 		this.renderAvailableList();
 		this.renderChooseButtons();
+		this.renderChosenList();
 	}
 
-	handleNodeSelect(id) {
+	handleAvailableSelect(id) {
 		this.available.selected.toggle(id);
+	}
+
+	handleChosenSelect(id) {
+		this.chosen.selected.toggle(id);
 	}
 
 	handleMoveFromChosenClick() {
@@ -58,7 +63,7 @@ class TreeShaker {
 			disabled: available.disabled,
 			index,
 			list: available.list,
-			onSelect: this.handleNodeSelect.bind(this),
+			onSelect: this.handleAvailableSelect.bind(this),
 			selected: available.selected,
 		});
 
@@ -66,14 +71,28 @@ class TreeShaker {
 	}
 
 	renderChooseButtons() {
-		const cohooseButtons = new ChooseButtons({
+		const chooseButtons = new ChooseButtons({
 			availableSelected: this.available.selected,
 			chosenSelected: this.chosen.selected,
 			onMoveFromChosenClick: this.handleMoveFromChosenClick.bind(this),
 			onMoveToChosenClick: this.handleMoveToChosenClick.bind(this),
 		});
 
-		this.$element.append(cohooseButtons.$element);
+		this.$element.append(chooseButtons.$element);
+	}
+
+	renderChosenList() {
+		const { index, chosen } = this;
+
+		const chosenList = new AvailableList({
+			disabled: chosen.disabled,
+			index,
+			list: chosen.list,
+			onSelect: this.handleChosenSelect.bind(this),
+			selected: chosen.selected,
+		});
+
+		this.$element.append(chosenList.$element);
 	}
 }
 

@@ -31,7 +31,7 @@ class AvailableList extends Component {
 			this.handleNodeClick
 		);
 
-		// this.subscribe(this.props.list, this.handleListChange);
+		this.subscribe(this.props.list, this.handleListChange);
 		this.subscribe(this.props.selected, this.handleSelectedChange);
 		this.subscribe(this.props.disabled, this.handleDisabledChange);
 
@@ -40,7 +40,7 @@ class AvailableList extends Component {
 
 	handleNodeClick(event) {
 		const $element = $(event.target);
-		const id = $element.data('node-id');
+		const id = $element.data('node-id').toString();
 		const disabled = this.props.disabled.state;
 
 		if (disabled.includes(id)) {
@@ -50,15 +50,22 @@ class AvailableList extends Component {
 		this.props.onSelect(id);
 	}
 
+	handleListChange(current, prev) {
+		const mutation = getArrayMutation(current, prev);
+
+		mutation.toRemove.forEach(this.removeElementById.bind(this));
+		mutation.toAdd.forEach(this.insertElementById.bind(this));
+	}
+
 	handleSelectedChange(current, prev) {
 		const mutation = getArrayMutation(current, prev);
 
 		mutation.toRemove.forEach((id) => {
-			this.refreshNodeById(id, { selected: false });
+			this.refreshElementById(id, { selected: false });
 		});
 
 		mutation.toAdd.forEach((id) => {
-			this.refreshNodeById(id, { selected: true });
+			this.refreshElementById(id, { selected: true });
 		});
 	}
 
@@ -66,49 +73,73 @@ class AvailableList extends Component {
 		const mutation = getArrayMutation(current, prev);
 
 		mutation.toRemove.forEach((id) => {
-			this.refreshNodeById(id, { disabled: false });
+			this.refreshElementById(id, { disabled: false });
 		});
 
 		mutation.toAdd.forEach((id) => {
-			this.refreshNodeById(id, { disabled: true });
+			this.refreshElementById(id, { disabled: true });
 		});
 	}
 
-	refreshNodeById(id, data) {
+	getElementById(id) {
+		const $element = this.$element.children(`[data-node-id=${id}]`);
+
+		return $element.length
+			? $element
+			: null;
+	}
+
+	refreshElementById(id, data) {
 		const $element = this.$element.children(`[data-node-id=${id}]`);
 
 		$element.data(data);
-		this.refreshNode($element);
+		this.refreshElement($element);
 	}
 
-	refreshNode($element) {
-		refreshNode($element, this.classNames);
+	removeElementById(id) {
+		this.getElementById(id).remove();
 	}
 
-	bindList() {
-		this.$element.children().each((index, element) => {
-			const $element = $(element);
-			const id = $element.data('node-id');
+	insertElementById(id) {
+		const node = this.props.index[id];
+		const $element = this.getElementById(id) || $(this.getElementHtml(id));
+		const indexInList = this.props.list.state.indexOf(node.id);
 
-			$element.data('node', this.props.index[id]);
-		});
+		if (indexInList < 0) {
+			throw new Error('Could not create element for node that is not in list');
+		}
+
+		if (indexInList === 0) {
+			return $element.prependTo(this.$element);
+		}
+
+		const siblingId = this.props.list.state[indexInList - 1];
+
+		return $element.insertAfter(this.getElementById(siblingId));
+	}
+
+	getElementHtml(id) {
+		return getElementHtml(this.props.index[id], this.classNames);
+	}
+
+	refreshElement($element) {
+		refreshElement($element, this.classNames);
 	}
 
 	renderList() {
 		const { classNames } = this;
 
-		const html = this.props.list.state.map((node) => {
-			return getNodeHtml(node, classNames);
+		const html = this.props.list.state.map((id) => {
+			return this.getElementHtml(id, classNames);
 		}).join('');
 
 		this.$element.html(html);
-		this.bindList();
 	}
 }
 
 module.exports = AvailableList;
 
-function getNodeHtml(node, classNames) {
+function getElementHtml(node, classNames) {
 	return `<div
 		data-node-id="${node.id}"
 		class="${classNames.node}"
@@ -138,7 +169,7 @@ function getArrayMutation(current, prev) {
 	return { toAdd, toRemove };
 }
 
-function refreshNode($element, classNames) {
+function refreshElement($element, classNames) {
 	$element.toggleClass(classNames.selected, Boolean($element.data('selected')));
 	$element.toggleClass(classNames.disabled, Boolean($element.data('disabled')));
 }

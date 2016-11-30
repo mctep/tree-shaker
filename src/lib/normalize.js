@@ -6,7 +6,7 @@ function makeFlatList(nodes) {
 	let result = [];
 
 	nodes.forEach((node) => {
-		result.push(node);
+		result.push(node.id);
 		result = result.concat(makeFlatList(node.children));
 	});
 

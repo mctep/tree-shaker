@@ -63,10 +63,10 @@ it('should make right normalize', () => {
 			4: node4,
 		},
 		list: [
-			node1,
-			node2,
-			node4,
-			node3,
+			node1.id,
+			node2.id,
+			node4.id,
+			node3.id,
 		],
 		root: [node1, node3],
 	};
