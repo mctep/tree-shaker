@@ -23,21 +23,25 @@ it('should make right normalize', () => {
 	};
 
 	const node1 = Object.assign({}, {
+		anchestorsIds: ['1'],
 		id: '1',
 		parentId: null,
 	});
 
 	const node2 = Object.assign({}, {
+		anchestorsIds: ['1', '2'],
 		id: '2',
 		parentId: '1',
 	});
 
 	const node3 = Object.assign({}, {
+		anchestorsIds: ['3'],
 		id: '3',
 		parentId: null,
 	});
 
 	const node4 = Object.assign({}, {
+		anchestorsIds: ['1', '2', '4'],
 		id: '4',
 		parentId: '2',
 	});
@@ -54,7 +58,7 @@ it('should make right normalize', () => {
 	node4.parent = node2;
 	node4.children = [];
 
-	const input = [item1, item2, item3, item4];
+	const input = [item4, item3, item2, item1];
 	const output = {
 		index: {
 			1: node1,
@@ -63,10 +67,10 @@ it('should make right normalize', () => {
 			4: node4,
 		},
 		list: [
-			node1.id,
-			node2.id,
-			node4.id,
-			node3.id,
+			node1,
+			node2,
+			node4,
+			node3,
 		],
 		root: [node1, node3],
 	};

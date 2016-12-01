@@ -1,26 +1,48 @@
-function makeFlatList(nodes) {
-	if (!nodes.length) {
-		return [];
+const assign = require('lodash/assign');
+
+function compare(node1, node2) {
+	const index1 = getAnchestorsPath(node1);
+	const index2 = getAnchestorsPath(node2);
+
+	if (index1 > index2) {
+		return 1;
 	}
 
-	let result = [];
+	if (index1 < index2) {
+		return -1;
+	}
 
-	nodes.forEach((node) => {
-		result.push(node.id);
-		result = result.concat(makeFlatList(node.children));
-	});
+	return 0;
+}
 
-	return result;
+
+function getAnchestorsPath(node) {
+	if (node.anchestorsIds) {
+		return node.anchestorsIds.join('/');
+	}
+
+	const result = [node.id];
+	let parent = node.parent;
+
+	while (parent) {
+		result.unshift(parent.id);
+		parent = parent.parent;
+	}
+
+	node.anchestorsIds = result;
+
+	return result.join('/');
 }
 
 function normalize(items) {
 	const index = {};
 	const root = [];
+	const list = [];
 
 	function appendNode(item) {
 		const { id } = item;
 
-		index[id] = Object.assign(
+		index[id] = assign(
 			index[id] || { children: [], parent: null }, item
 		);
 
@@ -36,9 +58,12 @@ function normalize(items) {
 		} else {
 			root.push(node);
 		}
+
+		list.push(node);
 	});
 
-	const list = makeFlatList(root);
+	list.sort(compare);
+	root.sort(compare);
 
 	return { index, list, root };
 }

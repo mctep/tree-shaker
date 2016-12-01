@@ -1,6 +1,5 @@
 const PARENT_CHANCE = 0.8;
 const CHILD_CHANCE = 0.8;
-const COUNT = 20;
 
 const FIRST_NAMES = [
 	'Lorretta',
@@ -72,10 +71,10 @@ function randomTitle() {
 	return `${randomItem(FIRST_NAMES)} ${randomItem(LAST_NAMES)}`;
 }
 
-module.exports = function generateRandomNodes() {
+module.exports = function generateRandomNodes(count) {
+	let step = count;
 	const parentIds = [];
 	const result = [];
-	let step = COUNT;
 
 	function makeChild(node) {
 		const isChild = randomBoolean(CHILD_CHANCE);

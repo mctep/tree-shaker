@@ -1,98 +1,155 @@
 const $ = require('jquery');
-const AvailableList = require('./components/available-list');
-const ChooseButtons = require('./components/choose-buttons');
+const _ = require('lodash');
+const Select = require('./components/select');
+const SelectVirtual = require('./components/select-virtual');
 const normalize = require('lib/normalize');
-const ArrayModel = require('tree-shaker/models/array');
+const {
+	moveSelectedNodesToChosen,
+	removeSelectedNodesFromChosen,
+} = require('lib/move-nodes');
 
 class TreeShaker {
 	constructor(props) {
-		const { nodes } = props;
+		this.handleAvailableSelect = this.handleAvailableSelect.bind(this);
+		this.handleChosenSelect = this.handleChosenSelect.bind(this);
+		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
+		this.handleMoveToChosenClick = this.handleMoveToChosenClick.bind(this);
+		this.handleRemoveToChosenClick = this.handleRemoveToChosenClick.bind(this);
 
-		const { index, list, root } = normalize(nodes);
+		this.props = {};
+		this.props.nodesObservable = props.nodesObservable;
 
-		this.index = index;
-		this.list = list;
-		this.root = root;
+		this.availableSelect = new SelectVirtual({
+			classNames: {
+				disabled: 'disabled',
+				list: 'list',
+				option: 'node',
+				selected: 'selected',
+			},
+			height: 200,
+			onSelect: this.handleAvailableSelect,
+			optionHeight: 20,
+			optionTemplate(option) {
+				return `#${option.anchestorsIds} ${option.title}`;
+			},
+		});
 
-		this.available = {
-			disabled: new ArrayModel([]),
-			list: new ArrayModel(list),
-			selected: new ArrayModel([]),
-		};
+		this.chosenSelect = new Select({
+			classNames: {
+				disabled: 'disabled',
+				list: 'list',
+				option: 'node',
+				selected: 'selected',
+			},
+			onSelect: this.handleChosenSelect,
+			optionTemplate(option) {
+				return `#${option.anchestorsIds} ${option.title}`;
+			},
+		});
 
-		this.chosen = {
-			disabled: new ArrayModel([]),
-			list: new ArrayModel([]),
-			selected: new ArrayModel([]),
-		};
+		this.unsubscribe = this.props.nodesObservable.subscribe(
+			this.handleNodesUpdate
+		);
 
-		this.$element = $('<div></div>');
+		this.$moveToChosenButton = $('<button type="button">-&gt;</button>')
+		.on('click', this.handleMoveToChosenClick);
+		this.$removeFromChosenButton = $('<button type="button">&lt;-</button>')
+		.on('click', this.handleRemoveToChosenClick);
+		const $buttonsContainer = $('<div></div>');
 
-		this.renderAvailableList();
-		this.renderChooseButtons();
-		this.renderChosenList();
+		$buttonsContainer
+			.append(this.$moveToChosenButton)
+			.append(this.$removeFromChosenButton);
+
+		this.$element = $('<div></div>')
+			.append(this.availableSelect.$element)
+			.append(this.chosenSelect.$element)
+			.append($buttonsContainer);
+
+		this.refreshMoveToChosenButton();
+		this.refreshRemoveToChosenButton();
 	}
 
-	handleAvailableSelect(id) {
-		this.available.selected.toggle(id);
+	getNodesByIds(ids) {
+		return _.compact(_.map(ids, (id) => {
+			return this.nodesById[id];
+		}));
 	}
 
-	handleChosenSelect(id) {
-		this.chosen.selected.toggle(id);
+	handleNodesUpdate(nodes) {
+		const { list, index } = normalize(nodes);
+
+		this.nodesById = index;
+		this.availableSelect.setOptions(list);
+		this.availableSelect.render();
 	}
 
-	handleMoveFromChosenClick() {
-		const selected = this.chosen.selected.state;
+	handleAvailableSelect() {
+		this.refreshMoveToChosenButton();
+	}
 
-		this.chosen.list.remove(selected);
-		this.available.disabled.remove(selected);
+	handleChosenSelect() {
+		this.refreshRemoveToChosenButton();
+	}
+
+	refreshMoveToChosenButton() {
+		const disabled = !this.availableSelect.selectedOptionsIds.length;
+
+		this.$moveToChosenButton.attr({ disabled });
+	}
+
+	refreshRemoveToChosenButton() {
+		const disabled = !this.chosenSelect.selectedOptionsIds.length;
+
+		this.$removeFromChosenButton.attr({ disabled });
 	}
 
 	handleMoveToChosenClick() {
-		const selected = this.available.selected.state;
-
-		this.chosen.list.add(selected);
-		this.available.selected.remove(selected);
-		this.available.disabled.add(selected);
-	}
-
-	renderAvailableList() {
-		const { index, available } = this;
-
-		const availableList = new AvailableList({
-			disabled: available.disabled,
-			index,
-			list: available.list,
-			onSelect: this.handleAvailableSelect.bind(this),
-			selected: available.selected,
+		const {
+			availableDisabledIds,
+			availableSelectedIds,
+			chosenIds,
+			chosenSelectedIds,
+		} = moveSelectedNodesToChosen({
+			currentAvailableDisabledIds: this.availableSelect.disabledOptionsIds,
+			currentChosenIds: this.chosenSelect.optionsIds,
+			selectedIds: this.availableSelect.selectedOptionsIds,
 		});
 
-		this.$element.append(availableList.$element);
+		this.availableSelect.disabledOptionsIds = availableDisabledIds;
+		this.availableSelect.selectedOptionsIds = availableSelectedIds;
+		this.chosenSelect.setOptions(this.getNodesByIds(chosenIds));
+		this.chosenSelect.visibleOptionsIds = chosenIds;
+		this.chosenSelect.selectedOptionsIds = chosenSelectedIds;
+
+		this.refreshMoveToChosenButton();
+		this.refreshRemoveToChosenButton();
+		this.availableSelect.render();
+		this.chosenSelect.render();
 	}
 
-	renderChooseButtons() {
-		const chooseButtons = new ChooseButtons({
-			availableSelected: this.available.selected,
-			chosenSelected: this.chosen.selected,
-			onMoveFromChosenClick: this.handleMoveFromChosenClick.bind(this),
-			onMoveToChosenClick: this.handleMoveToChosenClick.bind(this),
+	handleRemoveToChosenClick() {
+		const {
+			availableDisabled,
+			availableSelected,
+			chosen,
+			chosenSelected,
+		} = removeSelectedNodesFromChosen({
+			availableDisabled: this.availableSelect.disabledOptionsIds,
+			chosen: this.chosenSelect.optionsIds,
+			chosenSelected: this.chosenSelect.selectedOptionsIds,
 		});
 
-		this.$element.append(chooseButtons.$element);
-	}
+		this.availableSelect.disabledOptionsIds = availableDisabled;
+		this.availableSelect.selectedOptionsIds = availableSelected;
+		this.chosenSelect.setOptions(this.getNodesByIds(chosen));
+		this.chosenSelect.visibleOptionsIds = chosen;
+		this.chosenSelect.selectedOptionsIds = chosenSelected;
 
-	renderChosenList() {
-		const { index, chosen } = this;
-
-		const chosenList = new AvailableList({
-			disabled: chosen.disabled,
-			index,
-			list: chosen.list,
-			onSelect: this.handleChosenSelect.bind(this),
-			selected: chosen.selected,
-		});
-
-		this.$element.append(chosenList.$element);
+		this.refreshMoveToChosenButton();
+		this.refreshRemoveToChosenButton();
+		this.availableSelect.render();
+		this.chosenSelect.render();
 	}
 }
 

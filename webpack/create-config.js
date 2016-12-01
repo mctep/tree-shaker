@@ -38,8 +38,7 @@ function makeLoaders() {
 		exclude: [/node_modules/],
 		loader: 'babel-loader',
 		query: {
-			presets: [['babel-preset-modern-browsers', {
-				loose: true,
+			presets: [['babel-preset-es2015', {
 				modules: false,
 			}]],
 		},

@@ -1,18 +1,18 @@
-const listeners = Symbol('listeners');
+const includes = require('lodash/includes');
 
 module.exports = class Observable {
 	constructor(state) {
 		this.state = state;
-		this[listeners] = [];
+		this.listeners = [];
 	}
 
 	subscribe(listener) {
-		if (!this[listeners].includes(listener)) {
-			this[listeners].push(listener);
+		if (!includes(this.listeners, listener)) {
+			this.listeners.push(listener);
 		}
 
 		return () => {
-			this[listeners] = this[listeners].filter((existsListener) => {
+			this.listeners = this.listeners.filter((existsListener) => {
 				return existsListener !== listener;
 			});
 		};
@@ -22,7 +22,7 @@ module.exports = class Observable {
 		const oldState = this.state;
 
 		this.state = state;
-		this[listeners].forEach((listener) => {
+		this.listeners.forEach((listener) => {
 			listener(this.state, oldState);
 		});
 	}

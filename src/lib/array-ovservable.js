@@ -4,14 +4,16 @@ const uniq = require('lodash/uniq');
 const Observable = require('lib/observable');
 
 class ArrayModel extends Observable {
-	toggle(item) {
+	toggle(items) {
 		const { state } = this;
 
-		if (includes(state, item)) {
-			this.dispatch(without(state, item));
-		} else {
-			this.dispatch(state.concat(item));
-		}
+		items.forEach((item) => {
+			if (includes(state, item)) {
+				this.dispatch(without(state, item));
+			} else {
+				this.dispatch(state.concat(item));
+			}
+		});
 	}
 
 	add(items) {
@@ -24,6 +26,20 @@ class ArrayModel extends Observable {
 		const { state } = this;
 
 		this.dispatch(without(state, ...items));
+	}
+
+	set(items) {
+		this.dispatch(items);
+	}
+
+	replace(needle, updated) {
+		this.dispatch(this.state.map((item) => {
+			if (item === needle) {
+				return updated;
+			}
+
+			return item;
+		}));
 	}
 }
 
