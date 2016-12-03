@@ -17,10 +17,27 @@ function hasSomeSelectedNode(tree) {
 
 class TreeShaker {
 	constructor(props) {
-		this.bindHandlers();
-
 		this.props = {};
 		this.props.nodesObservable = props.nodesObservable;
+		this.props.availableTemplates = props.availableTemplates;
+		this.props.chosenTemplates = props.chosenTemplates;
+
+		this.$element = $('<div></div>');
+
+		this.createAvailableSelect();
+		this.createChosenSelect();
+		this.createMovingButtons();
+		this.createSortingButtons();
+
+		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
+		this.unsubscribe = this.props.nodesObservable.subscribe(
+			this.handleNodesUpdate
+		);
+	}
+
+	createAvailableSelect() {
+		this.handleMoveToChosenClick = this.handleMoveToChosenClick.bind(this);
+		this.handleAvailableSelect = this.handleAvailableSelect.bind(this);
 
 		this.availableSelect = new Select({
 			classNames: {
@@ -33,8 +50,16 @@ class TreeShaker {
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
 			optionHeight: 20,
-			templates: props.availableTemplates,
+			templates: this.props.availableTemplates,
 		});
+
+		this.$element.append(this.availableSelect.$element);
+	}
+
+	createChosenSelect() {
+		this.handleRemoveFromChosenClick =
+		this.handleRemoveFromChosenClick.bind(this);
+		this.handleChosenSelect = this.handleChosenSelect.bind(this);
 
 		this.chosenSelect = new Select({
 			classNames: {
@@ -47,13 +72,13 @@ class TreeShaker {
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
 			optionHeight: 20,
-			templates: props.chosenTemplates,
+			templates: this.props.chosenTemplates,
 		});
 
-		this.unsubscribe = this.props.nodesObservable.subscribe(
-			this.handleNodesUpdate
-		);
+		this.$element.append(this.chosenSelect.$element);
+	}
 
+	createMovingButtons() {
 		this.$moveToChosenButton = $('<button type="button">-&gt;</button>')
 		.on('click', this.handleMoveToChosenClick);
 		this.$removeFromChosenButton = $('<button type="button">&lt;-</button>')
@@ -64,6 +89,16 @@ class TreeShaker {
 		$movingButtons
 		.append(this.$moveToChosenButton)
 		.append(this.$removeFromChosenButton);
+
+		this.refreshMoveToChosenButton();
+		this.refreshRemoveToChosenButton();
+
+		this.$element.append($movingButtons);
+	}
+
+	createSortingButtons() {
+		this.handleMoveUpClick = this.handleMoveUpClick.bind(this);
+		this.handleMoveDownClick = this.handleMoveDownClick.bind(this);
 
 		this.$moveUpButton = $('<button type="button">up</button>')
 		.on('click', this.handleMoveUpClick);
@@ -76,28 +111,10 @@ class TreeShaker {
 		.append(this.$moveUpButton)
 		.append(this.$moveDownButton);
 
-		this.$element = $('<div></div>')
-		.append(this.availableSelect.$element)
-		.append(this.chosenSelect.$element)
-		.append($movingButtons)
-		.append($sortingButtons);
-
-		this.refreshMoveToChosenButton();
-		this.refreshRemoveToChosenButton();
-
 		this.refreshMoveUpButton();
 		this.refreshMoveDownButton();
-	}
 
-	bindHandlers() {
-		this.handleAvailableSelect = this.handleAvailableSelect.bind(this);
-		this.handleChosenSelect = this.handleChosenSelect.bind(this);
-		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
-		this.handleMoveToChosenClick = this.handleMoveToChosenClick.bind(this);
-		this.handleRemoveFromChosenClick =
-		this.handleRemoveFromChosenClick.bind(this);
-		this.handleMoveUpClick = this.handleMoveUpClick.bind(this);
-		this.handleMoveDownClick = this.handleMoveDownClick.bind(this);
+		this.$element.append($sortingButtons);
 	}
 
 	handleNodesUpdate(nodes) {

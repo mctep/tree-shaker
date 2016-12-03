@@ -2,6 +2,10 @@ const _ = require('lodash');
 const Tree = require('./tree');
 
 function getNodesForSorting(tree) {
+	if (!tree) {
+		return false;
+	}
+
 	return tree.toList().filter((node) => {
 		if (!node.data.selected) {
 			return false;
