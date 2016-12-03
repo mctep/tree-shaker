@@ -101,7 +101,7 @@ class Select {
 
 	getAvailableIdsForSections() {
 		return _.filter(this.options, (option) => {
-			return !option.data.hidden;
+			return !option.data.disabled;
 		});
 	}
 
@@ -187,11 +187,11 @@ class Select {
 	getOptionElement(option) {
 		const { classNames } = this.props;
 		const { id } = option;
-		const { hidden, selected } = option.data;
+		const { disabled, selected } = option.data;
 
 		const className = cn({
 			[classNames.option]: true,
-			[classNames.disabled]: hidden,
+			[classNames.disabled]: disabled,
 			[classNames.selected]: selected,
 		});
 
@@ -205,11 +205,11 @@ class Select {
 
 	updateOptionElement(option, $element) {
 		const { classNames } = this.props;
-		const { hidden, selected } = option.data;
+		const { disabled, selected } = option.data;
 
 		const className = cn({
 			[classNames.option]: true,
-			[classNames.disabled]: hidden,
+			[classNames.disabled]: disabled,
 			[classNames.selected]: selected,
 		});
 

@@ -16,7 +16,7 @@ function removeFromChosen(trees) {
 		const sublist = [];
 
 		const hasSelectedDescendant = Tree.findFirst(node, (desc) => {
-			if (!desc.data.hidden) {
+			if (!desc.data.disabled) {
 				sublist.push(desc);
 			}
 
@@ -34,7 +34,7 @@ function removeFromChosen(trees) {
 		chosen.removeNode(chosenNode);
 		const availableNode = available.getNodeById(chosenNode.id);
 
-		availableNode.data.hidden = false;
+		availableNode.data.disabled = false;
 	});
 
 	return trees;

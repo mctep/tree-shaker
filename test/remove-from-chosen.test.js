@@ -5,7 +5,7 @@ const removeFromChosenTest = createTreeTester(removeFromChosen);
 
 describe('removeFromChosen', () => {
 	removeFromChosenTest(`
-		1 hidden
+		1 disabled
 		=
 		1 selected
 	`, `
@@ -14,13 +14,13 @@ describe('removeFromChosen', () => {
 	`);
 
 	removeFromChosenTest(`
-		1 hidden
-		1 / 1.1 hidden
+		1 disabled
+		1 / 1.1 disabled
 		=
 		1
 		1 / 1.1 selected
 	`, `
-		1 hidden
+		1 disabled
 		1 / 1.1
 		=
 		1

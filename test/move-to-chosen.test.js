@@ -13,7 +13,7 @@ describe('moveToChosen', () => {
 	`, `
 		1
 		1 / 1.1
-		1 / 1.1 / 1.1.2 hidden
+		1 / 1.1 / 1.1.2 disabled
 		1 / 1.2
 		=
 		1.1.2
@@ -28,8 +28,8 @@ describe('moveToChosen', () => {
 		=
 	`, `
 		1
-		1 / 1.1 hidden
-		1 / 1.1 / 1.1.2 hidden
+		1 / 1.1 disabled
+		1 / 1.1 / 1.1.2 disabled
 		1 / 1.2
 		=
 		1.1
@@ -38,19 +38,19 @@ describe('moveToChosen', () => {
 
 	moveToChosenTest(`
 		1
-		1 / 1.1 hidden
+		1 / 1.1 disabled
 		1 / 1.1 / 1.1.2
 		1 / 1.2 selected
-		2 hidden
+		2 disabled
 		=
 		1.1
 		2
 	`, `
 		1
-		1 / 1.1 hidden
+		1 / 1.1 disabled
 		1 / 1.1 / 1.1.2
-		1 / 1.2 hidden
-		2 hidden
+		1 / 1.2 disabled
+		2 disabled
 		=
 		1.1
 		2
@@ -59,20 +59,20 @@ describe('moveToChosen', () => {
 
 	moveToChosenTest(`
 		1
-		1 / 1.1 hidden
+		1 / 1.1 disabled
 		1 / 1.1 / 1.1.2 selected
-		1 / 1.2 hidden
-		2 hidden
+		1 / 1.2 disabled
+		2 disabled
 		=
 		1.1
 		2
 		1.2
 	`, `
 		1
-		1 / 1.1 hidden
-		1 / 1.1 / 1.1.2 hidden
-		1 / 1.2 hidden
-		2 hidden
+		1 / 1.1 disabled
+		1 / 1.1 / 1.1.2 disabled
+		1 / 1.2 disabled
+		2 disabled
 		=
 		1.1
 		1.1 / 1.1.2
@@ -82,11 +82,11 @@ describe('moveToChosen', () => {
 
 	moveToChosenTest(`
 		1 selected
-		1 / 1.1 hidden
-		1 / 1.1 / 1.1.2 hidden
-		1 / 1.2 hidden
-		2 hidden
-		3 hidden
+		1 / 1.1 disabled
+		1 / 1.1 / 1.1.2 disabled
+		1 / 1.2 disabled
+		2 disabled
+		3 disabled
 		=
 		2
 		1.1
@@ -94,12 +94,12 @@ describe('moveToChosen', () => {
 		3
 		1.2
 	`, `
-		1 hidden
-		1 / 1.1 hidden
-		1 / 1.1 / 1.1.2 hidden
-		1 / 1.2 hidden
-		2 hidden
-		3 hidden
+		1 disabled
+		1 / 1.1 disabled
+		1 / 1.1 / 1.1.2 disabled
+		1 / 1.2 disabled
+		2 disabled
+		3 disabled
 		=
 		2
 		3
@@ -114,18 +114,18 @@ describe('moveToChosen', () => {
 		1 / 1.1
 		1 / 1.1 / 1.1.2 selected
 		1 / 1.2
-		2 hidden
-		3 hidden
+		2 disabled
+		3 disabled
 		=
 		2
 		3
 	`, `
-		1 hidden
+		1 disabled
 		1 / 1.1
-		1 / 1.1 / 1.1.2 hidden
+		1 / 1.1 / 1.1.2 disabled
 		1 / 1.2
-		2 hidden
-		3 hidden
+		2 disabled
+		3 disabled
 		=
 		2
 		3
@@ -135,12 +135,12 @@ describe('moveToChosen', () => {
 
 	moveToChosenTest(`
 		1 selected
-		1 / 1.1 hidden
+		1 / 1.1 disabled
 		=
 		1.1
 	`, `
-		1 hidden
-		1 / 1.1 hidden
+		1 disabled
+		1 / 1.1 disabled
 		=
 		1
 		1 / 1.1

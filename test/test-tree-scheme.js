@@ -5,7 +5,7 @@ const Tree = require('lib/tree');
 function makeSchema(list) {
 	return list.map((node) => {
 		const { id, data } = node;
-		const { selected, hidden } = data;
+		const { selected, disabled } = data;
 		const ancestorsIds = _.map(Tree.getAncestors(node).reverse(), 'id');
 
 		ancestorsIds.shift();
@@ -17,8 +17,8 @@ function makeSchema(list) {
 			result += ' selected';
 		}
 
-		if (hidden) {
-			result += ' hidden';
+		if (disabled) {
+			result += ' disabled';
 		}
 
 		return result;
@@ -26,16 +26,16 @@ function makeSchema(list) {
 }
 
 function parseLine(line) {
-	const path = line.replace(/(selected|hidden)/g, '').split('/');
+	const path = line.replace(/(selected|disabled)/g, '').split('/');
 	const id = path.slice(-1)[0];
 	const parentId = path.length > 1
 		? path.slice(-2)[0]
 		: null;
 
 	const selected = Boolean(line.match(/selected/));
-	const hidden = Boolean(line.match(/hidden/));
+	const disabled = Boolean(line.match(/disabled/));
 
-	return { hidden, id, parentId, selected };
+	return { disabled, id, parentId, selected };
 }
 
 

@@ -14,7 +14,7 @@
 .node {
 	height: 20px;
 	white-space: nowrap;
-	overflow: hidden;
+	overflow: disabled;
 	text-overflow: ellipsis;
 	cursor: pointer;
 }

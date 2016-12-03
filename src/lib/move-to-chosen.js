@@ -15,7 +15,7 @@ function moveToChosen(trees) {
 		const sublist = [];
 
 		const hasSelectedDescendant = Tree.findFirst(node, (desc) => {
-			if (!desc.data.hidden) {
+			if (!desc.data.disabled) {
 				sublist.push(desc);
 			}
 
@@ -66,7 +66,7 @@ function moveToChosen(trees) {
 		});
 
 		data.selected = false;
-		data.hidden = true;
+		data.disabled = true;
 
 		return chosenNode;
 	}
