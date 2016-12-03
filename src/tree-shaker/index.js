@@ -1,12 +1,8 @@
 const $ = require('jquery');
 const _ = require('lodash');
-const Select = require('./components/select');
 const SelectVirtual = require('./components/select-virtual');
-const normalize = require('lib/normalize');
-const {
-	moveSelectedNodesToChosen,
-	removeSelectedNodesFromChosen,
-} = require('lib/move-nodes');
+const Tree = require('lib/tree');
+const moveToChosen = require('lib/move-to-chosen');
 
 class TreeShaker {
 	constructor(props) {
@@ -30,20 +26,34 @@ class TreeShaker {
 			onSelect: this.handleAvailableSelect,
 			optionHeight: 20,
 			optionTemplate(option) {
-				return `#${option.anchestorsIds} ${option.title}`;
+				const { data } = option;
+
+				const pad = _.map(Tree.getAncestors(option), () => {
+					return '—';
+				}).join('');
+
+				return `${pad} ${data.title}`;
 			},
 		});
 
-		this.chosenSelect = new Select({
+		this.chosenSelect = new SelectVirtual({
 			classNames: {
 				disabled: 'disabled',
 				list: 'list',
 				option: 'node',
 				selected: 'selected',
 			},
+			height: 200,
 			onSelect: this.handleChosenSelect,
+			optionHeight: 20,
 			optionTemplate(option) {
-				return `#${option.anchestorsIds} ${option.title}`;
+				const { data } = option.data.availableNode;
+
+				const pad = _.map(Tree.getAncestors(option), () => {
+					return '—';
+				}).join('');
+
+				return `${pad} ${data.title}`;
 			},
 		});
 
@@ -70,18 +80,15 @@ class TreeShaker {
 		this.refreshRemoveToChosenButton();
 	}
 
-	getNodesByIds(ids) {
-		return _.compact(_.map(ids, (id) => {
-			return this.nodesById[id];
-		}));
-	}
-
 	handleNodesUpdate(nodes) {
-		const { list, index } = normalize(nodes);
+		this.availableTree = new Tree(nodes);
+		this.chosenTree = new Tree([]);
 
-		this.nodesById = index;
-		this.availableSelect.setOptions(list);
+		this.availableSelect.setTree(this.availableTree);
+		this.chosenSelect.setTree(this.chosenTree);
+
 		this.availableSelect.render();
+		this.chosenSelect.render();
 	}
 
 	handleAvailableSelect() {
@@ -93,63 +100,67 @@ class TreeShaker {
 	}
 
 	refreshMoveToChosenButton() {
-		const disabled = !this.availableSelect.selectedOptionsIds.length;
+		let disabled = true;
+
+		if (this.availableTree) {
+			disabled = !this.availableTree.findFirst((node) => {
+				return node.data.selected;
+			});
+		}
 
 		this.$moveToChosenButton.attr({ disabled });
 	}
 
 	refreshRemoveToChosenButton() {
-		const disabled = !this.chosenSelect.selectedOptionsIds.length;
+		let disabled = true;
+
+		if (this.chosenTree) {
+			disabled = !this.chosenTree.findFirst((node) => {
+				return node.data.selected;
+			});
+		}
 
 		this.$removeFromChosenButton.attr({ disabled });
 	}
 
 	handleMoveToChosenClick() {
-		const {
-			availableDisabledIds,
-			availableSelectedIds,
-			chosenIds,
-			chosenSelectedIds,
-		} = moveSelectedNodesToChosen({
-			currentAvailableDisabledIds: this.availableSelect.disabledOptionsIds,
-			currentChosenIds: this.chosenSelect.optionsIds,
-			selectedIds: this.availableSelect.selectedOptionsIds,
+		moveToChosen({
+			available: this.availableTree,
+			chosen: this.chosenTree,
 		});
-
-		this.availableSelect.disabledOptionsIds = availableDisabledIds;
-		this.availableSelect.selectedOptionsIds = availableSelectedIds;
-		this.chosenSelect.setOptions(this.getNodesByIds(chosenIds));
-		this.chosenSelect.visibleOptionsIds = chosenIds;
-		this.chosenSelect.selectedOptionsIds = chosenSelectedIds;
 
 		this.refreshMoveToChosenButton();
 		this.refreshRemoveToChosenButton();
+		this.availableSelect.updateOptions();
 		this.availableSelect.render();
+		this.chosenSelect.updateOptions();
 		this.chosenSelect.render();
 	}
 
 	handleRemoveToChosenClick() {
-		const {
-			availableDisabled,
-			availableSelected,
-			chosen,
-			chosenSelected,
-		} = removeSelectedNodesFromChosen({
-			availableDisabled: this.availableSelect.disabledOptionsIds,
-			chosen: this.chosenSelect.optionsIds,
-			chosenSelected: this.chosenSelect.selectedOptionsIds,
-		});
+		this.render();
 
-		this.availableSelect.disabledOptionsIds = availableDisabled;
-		this.availableSelect.selectedOptionsIds = availableSelected;
-		this.chosenSelect.setOptions(this.getNodesByIds(chosen));
-		this.chosenSelect.visibleOptionsIds = chosen;
-		this.chosenSelect.selectedOptionsIds = chosenSelected;
-
-		this.refreshMoveToChosenButton();
-		this.refreshRemoveToChosenButton();
-		this.availableSelect.render();
-		this.chosenSelect.render();
+		// const {
+		// 	availableDisabled,
+		// 	availableSelected,
+		// 	chosen,
+		// 	chosenSelected,
+		// } = removeSelectedNodesFromChosen({
+		// 	availableDisabled: this.availableSelect.disabledOptionsIds,
+		// 	chosen: this.chosenSelect.optionsIds,
+		// 	chosenSelected: this.chosenSelect.selectedOptionsIds,
+		// });
+		//
+		// this.availableSelect.disabledOptionsIds = availableDisabled;
+		// this.availableSelect.selectedOptionsIds = availableSelected;
+		// this.chosenSelect.setOptions(getNodesByIds(chosen));
+		// this.chosenSelect.visibleOptionsIds = chosen;
+		// this.chosenSelect.selectedOptionsIds = chosenSelected;
+		//
+		// this.refreshMoveToChosenButton();
+		// this.refreshRemoveToChosenButton();
+		// this.availableSelect.render();
+		// this.chosenSelect.render();
 	}
 }
 

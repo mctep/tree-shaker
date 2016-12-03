@@ -19,16 +19,16 @@ class SelectVitrual extends Select {
 		this.topPadHeight = 0;
 	}
 
-	setOptions(options) {
-		super.setOptions(options);
+	updateOptions() {
+		super.updateOptions();
 		this.updateScrolling();
 	}
 
 	updateScrolling() {
 		const containerHeight = this.props.height;
-		const currentVisibleItems = this.visibleOptionsIds;
+		const currentVisibleItems = this.visibleOptions;
 		const itemHeight = this.props.optionHeight;
-		const items = this.optionsIds;
+		const items = this.options;
 		const scrollTop = this.$element.scrollTop();
 
 		const scrolling = getVirtualScrolling({
@@ -52,7 +52,7 @@ class SelectVitrual extends Select {
 		this.bottomPadHeight = bottomPadHeight;
 		this.topPadHeight = topPadHeight;
 
-		this.setVisibleOptionsIds(visibleItems);
+		this.setVisibleOptions(visibleItems);
 
 		return visibleItems;
 	}

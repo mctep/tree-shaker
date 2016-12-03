@@ -6,12 +6,12 @@ const TreeShaker = require('tree-shaker');
 // eslint-disable-next-line import/no-unassigned-import
 require('./style.css');
 
-const MAX_COUNT = 100;
+const MAX_COUNT = 10;
 
 function getCount() {
-	return Math.ceil(Math.random() * MAX_COUNT);
+	// return Math.ceil(Math.random() * MAX_COUNT);
 
-	// return MAX_COUNT;
+	return MAX_COUNT;
 }
 
 const nodesObservable = new ArrayObservable([]);

@@ -37,11 +37,12 @@ function makeLoaders() {
 	return [{
 		exclude: [/node_modules/],
 		loader: 'babel-loader',
-		query: {
-			presets: [['babel-preset-es2015', {
-				modules: false,
-			}]],
-		},
+
+		// query: {
+		// 	presets: [['babel-preset-es2015', {
+		// 		modules: false,
+		// 	}]],
+		// },
 		test: /\.js$/,
 	}, {
 		loaders: ['style-loader', 'css-loader'],

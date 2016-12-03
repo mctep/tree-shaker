@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const $ = require('jquery');
-const { selectRegion, toggleSingleSelection } = require('lib/selections');
+const selectRegion = require('lib/select-region');
 const cn = require('lib/classnames');
 
 class Select {
@@ -24,79 +24,75 @@ class Select {
 	}
 
 	clearState() {
+		this.tree = null;
 		this.options = [];
-		this.index = {};
-		this.optionsIds = [];
-		this.visibleOptionsIds = [];
-		this.disabledOptionsIds = [];
-		this.selectedOptionsIds = [];
-		this.lastClickedId = null;
+		this.visibleOptions = [];
+		this.lastClicked = null;
 	}
 
-	setOptions(options) {
+	setTree(tree) {
 		this.clearState();
-		this.options = options;
-		this.optionsById = _.keyBy(options, 'id');
-		this.optionsIds = _.map(options, 'id');
+		this.tree = tree;
+		this.updateOptions();
 	}
 
-	setVisibleOptionsIds(ids) {
-		this.visibleOptionsIds = ids;
+	updateOptions() {
+		this.options = this.tree.toList();
 	}
 
-	setDisabledOptionsIds(ids) {
-		this.disabledOptionsIds = ids;
-	}
-
-	setSelectedOptionsIds(ids) {
-		this.selectedOptionsIds = ids;
+	setVisibleOptions(options) {
+		this.visibleOptions = options;
 	}
 
 	getAvailableIdsForSections() {
-		return _.without(this.optionsIds, ...this.disabledOptionsIds);
+		return _.filter(this.options, (option) => {
+			return !option.data.hidden;
+		});
 	}
 
-	getLastClickedId() {
-		return this.lastClickedId || this.optionsIds[0];
+	getLastClicked() {
+		return this.lastClicked || this.tree.rootNode.first;
 	}
 
 	handleOptionClick(event) {
-		const idClicked = $(event.target).data('option-id').toString();
-		const availableIdsForSelection = this.getAvailableIdsForSections();
+		const id = $(event.target).data('option-id').toString();
+		const clicked = this.tree.getNodeById(id);
+		const availableForSelection = this.getAvailableIdsForSections();
 
-		if (!_.includes(availableIdsForSelection, idClicked)) {
+		if (!_.includes(availableForSelection, clicked)) {
 			return;
 		}
 
-		const lastClickedId = this.getLastClickedId();
+		const lastClicked = this.getLastClicked();
 
 		const selectors = {
 			region: () => {
 				return selectRegion(
-					availableIdsForSelection,
-					idClicked,
-					lastClickedId,
+					availableForSelection,
+					clicked,
+					lastClicked,
 				);
 			},
 			single: () => {
-				this.lastClickedId = idClicked;
+				this.lastClicked = clicked;
 
-				return [idClicked];
+				this.options.forEach((option) => {
+					option.data.selected = option === clicked;
+				});
 			},
 			toggle: () => {
-				this.lastClickedId = idClicked;
-				const selectedIds = this.selectedOptionsIds;
+				this.lastClicked = clicked;
 
-				return toggleSingleSelection(selectedIds, idClicked);
+				clicked.data.selected = !clicked.data.selected;
 			},
 		};
 
 		const mode = selectMode();
 		const selector = selectors[mode];
 
-		this.setSelectedOptionsIds(selector());
+		selector();
 		this.render();
-		this.props.onSelect(this.selectedOptionsIds);
+		this.props.onSelect();
 
 		function selectMode() {
 			if (event.shiftKey) {
@@ -111,15 +107,15 @@ class Select {
 		}
 	}
 
-	getOptionHtml(option, state) {
+	getOptionHtml(option) {
 		const { classNames } = this.props;
 		const { id } = option;
-		const { disabled, selected } = state;
-		const html = this.props.optionTemplate(option, state);
+		const { hidden, selected } = option.data;
+		const html = this.props.optionTemplate(option);
 
 		const className = cn({
 			[classNames.option]: true,
-			[classNames.disabled]: disabled,
+			[classNames.disabled]: hidden,
 			[classNames.selected]: selected,
 		});
 
@@ -127,12 +123,8 @@ class Select {
 	}
 
 	getHtml() {
-		return _.map(this.visibleOptionsIds, (id) => {
-			const option = this.optionsById[id];
-			const disabled = _.includes(this.disabledOptionsIds, id);
-			const selected = _.includes(this.selectedOptionsIds, id);
-
-			return this.getOptionHtml(option, { disabled, selected });
+		return _.map(this.visibleOptions, (option) => {
+			return this.getOptionHtml(option);
 		}).join('');
 	}
 
