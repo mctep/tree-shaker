@@ -1,8 +1,9 @@
 const loopChecker = require('./loop-checker');
 const getAncestors = require('./get-ancestors');
 const getNearestAncestorWithNext = require('./get-nearest-ancestor-with-next');
+const toList = require('./to-list');
 
-// eslint-disable-next-line complexity
+
 module.exports = function filterWithAncestors(rootNode, checker) {
 	const result = [];
 
@@ -10,21 +11,28 @@ module.exports = function filterWithAncestors(rootNode, checker) {
 	const filteredIndex = {};
 	let node = rootNode.first;
 
+	function addNode(item) {
+		const { id } = item;
+
+		if (!filteredIndex[id]) {
+			result.push(item);
+			filteredIndex[id] = true;
+		}
+	}
+
+	function addIfFiltered(item) {
+		if (!checker(item)) {
+			return;
+		}
+
+		getAncestors(item, rootNode).reverse().forEach(addNode);
+		addNode(item);
+		toList(item).forEach(addNode);
+	}
+
 	while (node) {
 		checkLooping(node);
-
-		if (checker(node)) {
-			getAncestors(node, rootNode).reverse()
-			.forEach((ancestor) => {
-				if (!filteredIndex[ancestor.id]) {
-					result.push(ancestor);
-					filteredIndex[ancestor.id] = true;
-				}
-			});
-
-			result.push(node);
-			filteredIndex[node.id] = true;
-		}
+		addIfFiltered(node);
 
 		node = node.first || node.next ||
 			getNearestAncestorWithNext(node, rootNode);
