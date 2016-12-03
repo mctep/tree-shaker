@@ -3,6 +3,8 @@ const $ = require('jquery');
 const selectRegion = require('lib/select-region');
 const cn = require('lib/classnames');
 
+const DBLCLICK_TIMEOUT = 200;
+
 class Select {
 	constructor(props) {
 		this.clearState();
@@ -17,6 +19,10 @@ class Select {
 
 		this.props.optionTemplate = props.optionTemplate;
 		this.props.onSelect = props.onSelect;
+		this.props.onDblclick = props.onDblclick;
+
+		// it is needed because we use render as replacing html
+		this.dblclickTimeout = null;
 
 		this.$element = $(`<div class=${classNames.list}></div>`);
 		this.handleOptionClick = this.handleOptionClick.bind(this);
@@ -38,6 +44,8 @@ class Select {
 
 	updateOptions() {
 		this.options = this.tree.toList();
+		this.visibleOptions = [];
+		this.lastClicked = null;
 	}
 
 	setVisibleOptions(options) {
@@ -54,6 +62,15 @@ class Select {
 		return this.lastClicked || this.tree.rootNode.first;
 	}
 
+	setLastClicked(lastClicked) {
+		this.waitDblclick = true;
+		this.dblclickTimeout = setTimeout(() => {
+			this.waitDblclick = false;
+		}, DBLCLICK_TIMEOUT);
+
+		this.lastClicked = lastClicked;
+	}
+
 	handleOptionClick(event) {
 		const id = $(event.target).data('option-id').toString();
 		const clicked = this.tree.getNodeById(id);
@@ -64,6 +81,7 @@ class Select {
 		}
 
 		const lastClicked = this.getLastClicked();
+		const dblclicked = this.waitDblclick && lastClicked === clicked;
 
 		const selectors = {
 			region: () => {
@@ -74,14 +92,14 @@ class Select {
 				);
 			},
 			single: () => {
-				this.lastClicked = clicked;
+				this.setLastClicked(clicked);
 
 				this.options.forEach((option) => {
 					option.data.selected = option === clicked;
 				});
 			},
 			toggle: () => {
-				this.lastClicked = clicked;
+				this.setLastClicked(clicked);
 
 				clicked.data.selected = !clicked.data.selected;
 			},
@@ -93,6 +111,10 @@ class Select {
 		selector();
 		this.render();
 		this.props.onSelect();
+
+		if (dblclicked && mode === 'single') {
+			this.props.onDblclick();
+		}
 
 		function selectMode() {
 			if (event.shiftKey) {

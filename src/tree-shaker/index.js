@@ -10,7 +10,8 @@ class TreeShaker {
 		this.handleChosenSelect = this.handleChosenSelect.bind(this);
 		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
 		this.handleMoveToChosenClick = this.handleMoveToChosenClick.bind(this);
-		this.handleRemoveToChosenClick = this.handleRemoveToChosenClick.bind(this);
+		this.handleRemoveFromChosenClick =
+			this.handleRemoveFromChosenClick.bind(this);
 
 		this.props = {};
 		this.props.nodesObservable = props.nodesObservable;
@@ -23,6 +24,7 @@ class TreeShaker {
 				selected: 'selected',
 			},
 			height: 200,
+			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
 			optionHeight: 20,
 			optionTemplate(option) {
@@ -44,6 +46,7 @@ class TreeShaker {
 				selected: 'selected',
 			},
 			height: 200,
+			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
 			optionHeight: 20,
 			optionTemplate(option) {
@@ -64,7 +67,7 @@ class TreeShaker {
 		this.$moveToChosenButton = $('<button type="button">-&gt;</button>')
 		.on('click', this.handleMoveToChosenClick);
 		this.$removeFromChosenButton = $('<button type="button">&lt;-</button>')
-		.on('click', this.handleRemoveToChosenClick);
+		.on('click', this.handleRemoveFromChosenClick);
 		const $buttonsContainer = $('<div></div>');
 
 		$buttonsContainer
@@ -137,7 +140,7 @@ class TreeShaker {
 		this.chosenSelect.render();
 	}
 
-	handleRemoveToChosenClick() {
+	handleRemoveFromChosenClick() {
 		this.render();
 
 		// const {
