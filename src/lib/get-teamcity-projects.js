@@ -1,5 +1,7 @@
-const DELAY = 0;
+const _ = require('lodash');
 const data = require('./teamcity-projects.json');
+
+const DELAY = 0;
 
 function parseData() {
 	const result = [];
@@ -15,7 +17,7 @@ function parseData() {
 				parentProject.id
 			) || null;
 
-			result.push(Object.assign({}, node, { id, parentId }));
+			result.push(_.assign({}, node, { id, parentId }));
 		}
 	}
 
