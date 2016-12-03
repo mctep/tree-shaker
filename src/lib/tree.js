@@ -70,6 +70,88 @@ class Tree {
 		return null;
 	}
 
+	static moveNodeUp(node) {
+		if (!node.prev) {
+			return false;
+		}
+
+		const { prev, next, parent } = node;
+
+		node.prev = prev.prev;
+		node.next = prev;
+
+		if (node.prev) {
+			node.prev.next = node;
+		}
+
+		prev.prev = node;
+		prev.next = next;
+
+		if (next) {
+			next.prev = prev;
+			prev.next = next;
+		}
+
+		updateParent();
+
+		return true;
+
+		function updateParent() {
+			if (parent) {
+				const { last, first } = parent;
+
+				if (first === prev) {
+					parent.first = node;
+				}
+
+				if (last === node) {
+					parent.last = prev;
+				}
+			}
+		}
+	}
+
+	static moveNodeDown(node) {
+		if (!node.next) {
+			return false;
+		}
+
+		const { prev, next, parent } = node;
+
+		node.prev = next;
+		node.next = next.next;
+
+		if (node.next) {
+			node.next.prev = node;
+		}
+
+		next.next = node;
+		next.prev = prev;
+
+		if (prev) {
+			prev.next = next;
+			next.prev = prev;
+		}
+
+		updateParent();
+
+		return true;
+
+		function updateParent() {
+			if (parent) {
+				const { last, first } = parent;
+
+				if (last === next) {
+					parent.last = node;
+				}
+
+				if (first === node) {
+					parent.first = next;
+				}
+			}
+		}
+	}
+
 	static createEmptyNode(id) {
 		return {
 			first: null,

@@ -244,15 +244,16 @@ class Select {
 		for (let idx = 0; idx < visibleOptionsLength; idx += 1) {
 			const option = visibleOptions[idx];
 			const $child = $children.filter(`[data-option-id="${option.id}"]`);
+			let $updated = null;
 
 			if ($child.length) {
-				$prevChild = this.updateOptionElement(option, $child);
+				$updated = this.updateOptionElement(option, $child);
 			} else {
-				const $element = this.getOptionElement(option, $child);
-
-				$element.insertAfter($prevChild);
-				$prevChild = $element;
+				$updated = this.getOptionElement(option, $child);
 			}
+
+			$updated.insertAfter($prevChild);
+			$prevChild = $updated;
 		}
 	}
 

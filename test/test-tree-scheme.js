@@ -6,12 +6,12 @@ function makeSchema(list) {
 	return list.map((node) => {
 		const { id, data } = node;
 		const { selected, hidden } = data;
-		const anchestorsIds = _.map(Tree.getAncestors(node).reverse(), 'id');
+		const ancestorsIds = _.map(Tree.getAncestors(node).reverse(), 'id');
 
-		anchestorsIds.shift();
-		anchestorsIds.push(id);
+		ancestorsIds.shift();
+		ancestorsIds.push(id);
 
-		let result = anchestorsIds.join(' / ');
+		let result = ancestorsIds.join(' / ');
 
 		if (selected) {
 			result += ' selected';
