@@ -11,33 +11,57 @@ require('./style.css');
 
 const nodesObservable = new ArrayObservable([]);
 
-function availableOptionTemplate(option) {
-	const { data } = option;
+function getPad(option) {
 	const ancestors = Tree.getAncestors(option);
 
 	ancestors.shift();
-	const pad = _.map(ancestors, () => {
+
+	return _.map(ancestors, () => {
 		return '&nbsp;&nbsp;';
 	}).join('');
-
-	return `${pad}${data.name}`;
 }
 
-function chosenOptionTemplate(option) {
-	const { data } = option.data.availableNode;
-	const ancestors = Tree.getAncestors(option);
+const availableTemplates = {
+	getElement(option) {
+		const { data } = option;
+		const pad = getPad(option);
 
-	ancestors.shift();
-	const pad = _.map(ancestors, () => {
-		return '&nbsp;';
-	}).join('');
+		return $(`<div>${pad} ${data.name}</div>`);
+	},
 
-	return `${pad}${data.name}`;
-}
+	getShadowElement(option) {
+		const pad = getPad(option);
+
+		return $(`<div>${pad}.......</div>`);
+	},
+
+	updateElement(option, $element) {
+		return $element;
+	},
+};
+
+const chosenTemplates = {
+	getElement(option) {
+		const { data } = option.data.availableNode;
+		const pad = getPad(option);
+
+		return $(`<div>${pad} ${data.name}</div>`);
+	},
+
+	getShadowElement(option) {
+		const pad = getPad(option);
+
+		return $(`<div>${pad}.......</div>`);
+	},
+
+	updateElement(option, $element) {
+		return $element;
+	},
+};
 
 const treeShaker = new TreeShaker({
-	availableOptionTemplate,
-	chosenOptionTemplate,
+	availableTemplates,
+	chosenTemplates,
 	nodesObservable,
 });
 

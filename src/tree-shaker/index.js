@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const SelectVirtual = require('./components/select-virtual');
+const Select = require('./components/select');
 const Tree = require('lib/tree');
 const moveToChosen = require('lib/move-to-chosen');
 
@@ -15,32 +15,32 @@ class TreeShaker {
 		this.props = {};
 		this.props.nodesObservable = props.nodesObservable;
 
-		this.availableSelect = new SelectVirtual({
+		this.availableSelect = new Select({
 			classNames: {
 				disabled: 'disabled',
 				list: 'list',
 				option: 'node',
 				selected: 'selected',
 			},
-			height: 200,
+			height: 600,
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
 			optionHeight: 20,
-			optionTemplate: props.availableOptionTemplate,
+			templates: props.availableTemplates,
 		});
 
-		this.chosenSelect = new SelectVirtual({
+		this.chosenSelect = new Select({
 			classNames: {
 				disabled: 'disabled',
 				list: 'list',
 				option: 'node',
 				selected: 'selected',
 			},
-			height: 200,
+			height: 600,
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
 			optionHeight: 20,
-			optionTemplate: props.chosenOptionTemplate,
+			templates: props.chosenTemplates,
 		});
 
 		this.unsubscribe = this.props.nodesObservable.subscribe(

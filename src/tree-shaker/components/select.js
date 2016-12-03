@@ -2,11 +2,15 @@ const _ = require('lodash');
 const $ = require('jquery');
 const selectRegion = require('lib/select-region');
 const cn = require('lib/classnames');
+const getVirtualScrolling = require('lib/get-virtual-scrolling');
 
 const DBLCLICK_TIMEOUT = 200;
 
 class Select {
 	constructor(props) {
+		this.handleScroll = this.handleScroll.bind(this);
+		this.handleOptionClick = this.handleOptionClick.bind(this);
+
 		this.clearState();
 		this.props = {};
 
@@ -17,15 +21,26 @@ class Select {
 			selected: _.get(props, 'classNames.selected', ''),
 		};
 
+		this.props.height = props.height;
+		this.props.optionHeight = props.optionHeight;
 		this.props.optionTemplate = props.optionTemplate;
 		this.props.onSelect = props.onSelect;
 		this.props.onDblclick = props.onDblclick;
+		this.props.templates = props.templates;
 
 		// it is needed because we use render as replacing html
 		this.dblclickTimeout = null;
 
 		this.$element = $(`<div class=${classNames.list}></div>`);
-		this.handleOptionClick = this.handleOptionClick.bind(this);
+		this.$element.height(this.props.height);
+
+		this.$topPad = $('<div></div>');
+		this.$bottomPad = $('<div></div>');
+
+		this.$element.prepend(this.$topPad);
+		this.$element.append(this.$bottomPad);
+
+		this.$element.on('scroll', this.handleScroll);
 		this.$element.delegate('[data-option-id]', 'click', this.handleOptionClick);
 	}
 
@@ -34,6 +49,8 @@ class Select {
 		this.options = [];
 		this.visibleOptions = [];
 		this.lastClicked = null;
+		this.bottomPadHeight = 0;
+		this.topPadHeight = 0;
 	}
 
 	setTree(tree) {
@@ -46,10 +63,40 @@ class Select {
 		this.options = this.tree.toList();
 		this.visibleOptions = [];
 		this.lastClicked = null;
+		this.updateScrolling();
 	}
 
-	setVisibleOptions(options) {
-		this.visibleOptions = options;
+	updateScrolling() {
+		const containerHeight = this.props.height;
+		const currentVisibleItems = this.visibleOptions;
+		const itemHeight = this.props.optionHeight;
+		const items = this.options;
+		const scrollTop = this.$element.scrollTop();
+
+		const scrolling = getVirtualScrolling({
+			containerHeight,
+			currentVisibleItems,
+			itemHeight,
+			items,
+			scrollTop,
+		});
+
+		if (!scrolling) {
+			return null;
+		}
+
+		const {
+			bottomPadHeight,
+			topPadHeight,
+			visibleItems,
+		} = scrolling;
+
+		this.bottomPadHeight = bottomPadHeight;
+		this.topPadHeight = topPadHeight;
+
+		this.visibleOptions = visibleItems;
+
+		return visibleItems;
 	}
 
 	getAvailableIdsForSections() {
@@ -71,8 +118,16 @@ class Select {
 		this.lastClicked = lastClicked;
 	}
 
+	handleScroll() {
+		const newVisibleIds = this.updateScrolling();
+
+		if (newVisibleIds) {
+			this.render();
+		}
+	}
+
 	handleOptionClick(event) {
-		const id = $(event.target).data('option-id').toString();
+		const id = $(event.currentTarget).data('option-id').toString();
 		const clicked = this.tree.getNodeById(id);
 		const availableForSelection = this.getAvailableIdsForSections();
 
@@ -129,11 +184,10 @@ class Select {
 		}
 	}
 
-	getOptionHtml(option) {
+	getOptionElement(option) {
 		const { classNames } = this.props;
 		const { id } = option;
 		const { hidden, selected } = option.data;
-		const html = this.props.optionTemplate(option);
 
 		const className = cn({
 			[classNames.option]: true,
@@ -141,17 +195,75 @@ class Select {
 			[classNames.selected]: selected,
 		});
 
-		return `<div class="${className}" data-option-id="${id}">${html}</div>`;
+		const $optionElement =
+		$(`<div class="${className}" data-option-id="${id}"></div>`);
+
+		$optionElement.append(this.props.templates.getElement(option));
+
+		return $optionElement;
 	}
 
-	getHtml() {
-		return _.map(this.visibleOptions, (option) => {
-			return this.getOptionHtml(option);
-		}).join('');
+	updateOptionElement(option, $element) {
+		const { classNames } = this.props;
+		const { hidden, selected } = option.data;
+
+		const className = cn({
+			[classNames.option]: true,
+			[classNames.disabled]: hidden,
+			[classNames.selected]: selected,
+		});
+
+		$element.attr({ class: className });
+		this.props.templates.updateElement(option, $element.children());
+
+		return $element;
+	}
+
+	removeHiddenElements() {
+		const $children = this.$element.children('[data-option-id]');
+		const childrenLength = $children.length;
+		const { visibleOptions } = this;
+
+		for (let idx = 0; idx < childrenLength; idx += 1) {
+			const $child = $children.eq(idx);
+			const id = $child.data('option-id');
+
+			if (!_.find(visibleOptions, { id })) {
+				$child.remove();
+			}
+		}
+	}
+
+	addOrUpdateVisibleElements() {
+		const $children = this.$element.children('[data-option-id]');
+
+		const { visibleOptions } = this;
+		const visibleOptionsLength = visibleOptions.length;
+		let $prevChild = this.$topPad;
+
+		for (let idx = 0; idx < visibleOptionsLength; idx += 1) {
+			const option = visibleOptions[idx];
+			const $child = $children.filter(`[data-option-id="${option.id}"]`);
+
+			if ($child.length) {
+				$prevChild = this.updateOptionElement(option, $child);
+			} else {
+				const $element = this.getOptionElement(option, $child);
+
+				$element.insertAfter($prevChild);
+				$prevChild = $element;
+			}
+		}
 	}
 
 	render() {
-		this.$element.html(this.getHtml());
+		const { $topPad, $bottomPad } = this;
+
+		$topPad.height(this.topPadHeight);
+		$bottomPad.height(this.bottomPadHeight);
+
+		this.removeHiddenElements();
+		this.addOrUpdateVisibleElements();
 	}
 }
 
