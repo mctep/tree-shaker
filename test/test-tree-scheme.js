@@ -38,28 +38,30 @@ function parseLine(line) {
 	return { disabled, id, parentId, selected };
 }
 
-
 function parseSchema(schema) {
-	const [availableSchema, chosenSchems] =
-		schema.replace(/ |\t/g, '').split('=');
-	const availableLines = _.compact(availableSchema.split('\n'));
-	const chosenLines = _.compact(chosenSchems.split('\n'));
+	const lines = _.compact(schema.replace(/ |\t/g, '').split('\n'));
 
-	const available = new Tree(availableLines.map(parseLine));
-	const chosen = new Tree(chosenLines.map(parseLine));
+	return new Tree(lines.map(parseLine));
+}
+
+function parseMovingSchema(schema) {
+	const [availableSchema, chosenSchema] = schema.split('=');
+
+	const available = parseSchema(availableSchema);
+	const chosen = parseSchema(chosenSchema);
 
 	return { available, chosen };
 }
 
-function createTester(testFn) {
-	let testIdx = 1;
+function createMovingTester() {
+	let testIdx = 0;
 
-	return (beforeSchema, afterSchema) => {
+	return (beforeSchema, testFn, afterSchema) => {
 		testIdx += 1;
 
 		it(`case #${testIdx}`, () => {
-			const before = parseSchema(beforeSchema);
-			const after = parseSchema(afterSchema);
+			const before = parseMovingSchema(beforeSchema);
+			const after = parseMovingSchema(afterSchema);
 
 			const expectedSchema = [
 				makeSchema(after.available.toList()), makeSchema(after.chosen.toList()),
@@ -82,4 +84,27 @@ function createTester(testFn) {
 	};
 }
 
-module.exports = createTester;
+function createChangeTester() {
+	let testIdx = 0;
+
+	return (beforeSchema, testFn, afterSchema) => {
+		testIdx += 1;
+
+		it(`case #${testIdx}`, () => {
+			const before = parseSchema(beforeSchema);
+			const after = parseSchema(afterSchema);
+
+			const result = testFn(before);
+
+			const expectedSchema = makeSchema(after.toList());
+			const actualSchema = makeSchema(result);
+
+			expect(actualSchema).to.be.equal(expectedSchema);
+		});
+	};
+}
+
+module.exports = {
+	createChangeTester,
+	createMovingTester,
+};

@@ -3,6 +3,7 @@ const Select = require('./components/select');
 const Tree = require('lib/tree');
 const moveToChosen = require('lib/move-to-chosen');
 const removeFromChosen = require('lib/remove-from-chosen');
+const escapeRegexp = require('lib/escape-reg-exp');
 const { getNodesForSorting, moveUp, moveDown } = require('lib/sorting-nodes');
 
 function hasSomeSelectedNode(tree) {
@@ -28,6 +29,7 @@ class TreeShaker {
 		this.createChosenSelect();
 		this.createMovingButtons();
 		this.createSortingButtons();
+		this.createFilterInput();
 
 		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
 		this.unsubscribe = this.props.nodesObservable.subscribe(
@@ -117,6 +119,14 @@ class TreeShaker {
 		this.$element.append($sortingButtons);
 	}
 
+	createFilterInput() {
+		this.handleFilterInputChange = this.handleFilterInputChange.bind(this);
+		this.$filterInput = $('<input type="text" />')
+		.on('keyup', this.handleFilterInputChange);
+
+		this.$element.append(this.$filterInput);
+	}
+
 	handleNodesUpdate(nodes) {
 		this.availableTree = new Tree(nodes);
 		this.chosenTree = new Tree([]);
@@ -178,6 +188,18 @@ class TreeShaker {
 		if (moveDown(nodes)) {
 			this.refresh();
 		}
+	}
+
+	handleFilterInputChange() {
+		const value = this.$filterInput.val();
+		const reg = new RegExp(escapeRegexp(value), 'ig');
+
+		this.availableTree.forEach((node) => {
+			node.data.selected = false;
+			node.data.hidden = !node.data.name.match(reg);
+		});
+
+		this.refresh();
 	}
 
 	refreshMoveToChosenButton() {

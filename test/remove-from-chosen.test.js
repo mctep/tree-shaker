@@ -1,7 +1,11 @@
-const createTreeTester = require('./test-tree-scheme');
+const { createMovingTester } = require('./test-tree-scheme');
 const removeFromChosen = require('lib/remove-from-chosen');
 
-const removeFromChosenTest = createTreeTester(removeFromChosen);
+const tester = createMovingTester();
+
+function removeFromChosenTest(beforeSchema, afterSchema) {
+	tester(beforeSchema, removeFromChosen, afterSchema);
+}
 
 describe('removeFromChosen', () => {
 	removeFromChosenTest(`

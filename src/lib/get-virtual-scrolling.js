@@ -10,10 +10,10 @@ function getVirtualScrolling(props) {
 	} = props;
 
 	const visibleItemsCount = Math.ceil(containerHeight / itemHeight) + 1;
-	const disabledItemsCount = Math.floor(scrollTop / itemHeight);
+	const invisibleItemsCount = Math.floor(scrollTop / itemHeight);
 	const itemsCount = items.length;
 
-	const start = Math.min(itemsCount - 1, disabledItemsCount);
+	const start = Math.min(itemsCount - 1, invisibleItemsCount);
 	const end = start + visibleItemsCount;
 
 	const visibleItems = items.slice(start, end);

@@ -60,7 +60,9 @@ class Select {
 	}
 
 	updateOptions() {
-		this.options = this.tree.toList();
+		this.options = this.tree.filterWithAncestors((node) => {
+			return !node.data.hidden;
+		});
 		this.visibleOptions = [];
 		this.lastClicked = null;
 		this.updateScrolling();
@@ -106,7 +108,7 @@ class Select {
 	}
 
 	getLastClicked() {
-		return this.lastClicked || this.tree.rootNode.first;
+		return this.lastClicked || this.options[0];
 	}
 
 	setLastClicked(lastClicked) {

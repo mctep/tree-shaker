@@ -1,7 +1,11 @@
-const createTreeTester = require('./test-tree-scheme');
+const { createMovingTester } = require('./test-tree-scheme');
 const moveToChosen = require('lib/move-to-chosen');
 
-const moveToChosenTest = createTreeTester(moveToChosen);
+const tester = createMovingTester();
+
+function moveToChosenTest(beforeSchema, afterSchema) {
+	tester(beforeSchema, moveToChosen, afterSchema);
+}
 
 describe('moveToChosen', () => {
 	moveToChosenTest(`
