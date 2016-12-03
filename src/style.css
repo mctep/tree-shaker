@@ -2,7 +2,7 @@
 	height: 200px;
 }
 
-.list-all {
+.list {
 	height: 100%;
 	border: 1px solid blue;
 	overflow: auto;
@@ -12,6 +12,7 @@
 }
 
 .node {
+	height: 20px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -22,7 +23,17 @@
 	background: #ccc;
 }
 
-.buttons {
+.node.selected {
+	background: #3879d9;
+	color: #fff;
+}
+
+.node.disabled {
+	background: transparent;
+	color: #ccc;
+}
+
+.choose-buttons {
 	display: inline-block;
 	vertical-align: middle;
 }

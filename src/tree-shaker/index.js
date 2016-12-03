@@ -1,132 +1,170 @@
-const TreeModel = require('./lib/tree-model');
-const Button = require('./lib/button');
-const AvailableListView = require('./lib/available-list-view');
+const $ = require('jquery');
+const _ = require('lodash');
+const SelectVirtual = require('./components/select-virtual');
+const Tree = require('lib/tree');
+const moveToChosen = require('lib/move-to-chosen');
 
 class TreeShaker {
-	constructor(nodes) {
-		this.handleChooseButtonClick = this.handleChooseButtonClick.bind(this);
+	constructor(props) {
+		this.handleAvailableSelect = this.handleAvailableSelect.bind(this);
+		this.handleChosenSelect = this.handleChosenSelect.bind(this);
+		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
+		this.handleMoveToChosenClick = this.handleMoveToChosenClick.bind(this);
+		this.handleRemoveFromChosenClick =
+			this.handleRemoveFromChosenClick.bind(this);
 
-		this.model = new TreeModel(nodes);
-		const element = this.element = document.createElement('div');
-		const availableListView = this.createAvailableView();
-		const chooseButton = this.chooseButton = this.createChooseButton();
+		this.props = {};
+		this.props.nodesObservable = props.nodesObservable;
 
-		element.appendChild(availableListView.element);
-		element.appendChild(chooseButton.element);
+		this.availableSelect = new SelectVirtual({
+			classNames: {
+				disabled: 'disabled',
+				list: 'list',
+				option: 'node',
+				selected: 'selected',
+			},
+			height: 200,
+			onDblclick: this.handleMoveToChosenClick,
+			onSelect: this.handleAvailableSelect,
+			optionHeight: 20,
+			optionTemplate(option) {
+				const { data } = option;
 
-		this.updateChooseButton();
+				const pad = _.map(Tree.getAncestors(option), () => {
+					return '—';
+				}).join('');
+
+				return `${pad} ${data.title}`;
+			},
+		});
+
+		this.chosenSelect = new SelectVirtual({
+			classNames: {
+				disabled: 'disabled',
+				list: 'list',
+				option: 'node',
+				selected: 'selected',
+			},
+			height: 200,
+			onDblclick: this.handleRemoveFromChosenClick,
+			onSelect: this.handleChosenSelect,
+			optionHeight: 20,
+			optionTemplate(option) {
+				const { data } = option.data.availableNode;
+
+				const pad = _.map(Tree.getAncestors(option), () => {
+					return '—';
+				}).join('');
+
+				return `${pad} ${data.title}`;
+			},
+		});
+
+		this.unsubscribe = this.props.nodesObservable.subscribe(
+			this.handleNodesUpdate
+		);
+
+		this.$moveToChosenButton = $('<button type="button">-&gt;</button>')
+		.on('click', this.handleMoveToChosenClick);
+		this.$removeFromChosenButton = $('<button type="button">&lt;-</button>')
+		.on('click', this.handleRemoveFromChosenClick);
+		const $buttonsContainer = $('<div></div>');
+
+		$buttonsContainer
+			.append(this.$moveToChosenButton)
+			.append(this.$removeFromChosenButton);
+
+		this.$element = $('<div></div>')
+			.append(this.availableSelect.$element)
+			.append(this.chosenSelect.$element)
+			.append($buttonsContainer);
+
+		this.refreshMoveToChosenButton();
+		this.refreshRemoveToChosenButton();
 	}
 
-	createAvailableView() {
-		const { model } = this;
-		const availableListView = new AvailableListView();
+	handleNodesUpdate(nodes) {
+		this.availableTree = new Tree(nodes);
+		this.chosenTree = new Tree([]);
 
-		availableListView.onSelect = (id) => {
-			const node = model.getById(id);
+		this.availableSelect.setTree(this.availableTree);
+		this.chosenSelect.setTree(this.chosenTree);
 
-			model.available.toggleSelect(node);
-			if (model.available.isSelected(node)) {
-				availableListView.select(node);
-			} else {
-				availableListView.deselect(node);
-			}
-
-			this.updateChooseButton();
-		};
-
-		availableListView.renderNodes(model.available.list);
-
-		return availableListView;
+		this.availableSelect.render();
+		this.chosenSelect.render();
 	}
 
-	createChooseButton() {
-		const button = new Button();
-
-		button.content('->');
-		button.onClick = this.handleChooseButtonClick;
-
-		return button;
+	handleAvailableSelect() {
+		this.refreshMoveToChosenButton();
 	}
 
-	handleChooseButtonClick() {
-		const { model, availableListView } = this;
-		const { selected } = model.available;
-
-		model.moveSelectedAvailableToChosen();
-		availableListView.deselectMany(selected);
-		this.updateChooseButton();
+	handleChosenSelect() {
+		this.refreshRemoveToChosenButton();
 	}
 
-	updateChooseButton() {
-		const { model, chooseButton } = this;
-		const { selectedList } = model.available;
+	refreshMoveToChosenButton() {
+		let disabled = true;
 
-		if (selectedList.length) {
-			chooseButton.enable();
-		} else {
-			chooseButton.disable();
+		if (this.availableTree) {
+			disabled = !this.availableTree.findFirst((node) => {
+				return node.data.selected;
+			});
 		}
+
+		this.$moveToChosenButton.attr({ disabled });
+	}
+
+	refreshRemoveToChosenButton() {
+		let disabled = true;
+
+		if (this.chosenTree) {
+			disabled = !this.chosenTree.findFirst((node) => {
+				return node.data.selected;
+			});
+		}
+
+		this.$removeFromChosenButton.attr({ disabled });
+	}
+
+	handleMoveToChosenClick() {
+		moveToChosen({
+			available: this.availableTree,
+			chosen: this.chosenTree,
+		});
+
+		this.refreshMoveToChosenButton();
+		this.refreshRemoveToChosenButton();
+		this.availableSelect.updateOptions();
+		this.availableSelect.render();
+		this.chosenSelect.updateOptions();
+		this.chosenSelect.render();
+	}
+
+	handleRemoveFromChosenClick() {
+		this.render();
+
+		// const {
+		// 	availableDisabled,
+		// 	availableSelected,
+		// 	chosen,
+		// 	chosenSelected,
+		// } = removeSelectedNodesFromChosen({
+		// 	availableDisabled: this.availableSelect.disabledOptionsIds,
+		// 	chosen: this.chosenSelect.optionsIds,
+		// 	chosenSelected: this.chosenSelect.selectedOptionsIds,
+		// });
+		//
+		// this.availableSelect.disabledOptionsIds = availableDisabled;
+		// this.availableSelect.selectedOptionsIds = availableSelected;
+		// this.chosenSelect.setOptions(getNodesByIds(chosen));
+		// this.chosenSelect.visibleOptionsIds = chosen;
+		// this.chosenSelect.selectedOptionsIds = chosenSelected;
+		//
+		// this.refreshMoveToChosenButton();
+		// this.refreshRemoveToChosenButton();
+		// this.availableSelect.render();
+		// this.chosenSelect.render();
 	}
 }
 
 module.exports = TreeShaker;
-
-// export default class TreeShaker {
-// 	constructor(nodes) {
-// 		const store = new Observable({
-// 			nodes: normalize(nodes),
-// 			selectedIds: [],
-// 		});
-//
-// 		this.allNodes = new Tree(store, (state) => {
-// 			return {
-// 				list: state.nodes.list,
-// 			};
-// 		});
-//
-// 		this.element = document.createElement('div');
-//
-// 		this.element.appendChild(this.allNodes.element);
-// 	}
-//
-// 	// constructor(container, options) {
-// 	// 	const { nodes } = options;
-// 	//
-// 	// 	this.nodes = new Observable(normalize(nodes.state));
-// 	//
-// 	// 	nodes.subscribe((state) => {
-// 	// 		this.nodes.setState(normalize(state));
-// 	// 	});
-// 	//
-// 	// 	this.selectedIds = new Observable([]);
-// 	//
-// 	// 	this.container = container;
-// 	// 	this.container.className = 'tree-shaker';
-// 	//
-// 	// 	this.allNodesTree = new Tree({
-// 	// 		nodeClassName: 'node',
-// 	// 		nodes: this.nodes,
-// 	// 		selectedIds: this.selectedIds,
-// 	// 	});
-// 	//
-// 	// 	this.container.appendChild(this.allNodesTree.element);
-// 	// 	this.allNodesTree.element.className = 'list-all';
-// 	//
-// 	// 	const buttons = document.createElement('div');
-// 	// 	const button = document.createElement('button');
-// 	//
-// 	// 	buttons.className = 'buttons';
-// 	// 	button.setAttribute('type', 'button');
-// 	// 	button.innerHTML = '->';
-// 	// 	buttons.appendChild(button);
-// 	// 	this.container.appendChild(buttons);
-// 	//
-// 	// 	button.addEventListener('click', this.handleMoveClick.bind(this));
-// 	// }
-// 	//
-// 	// handleMoveClick() {
-// 	//
-// 	// }
-// }
-//
-// export { Observable };

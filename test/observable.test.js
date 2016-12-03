@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const Observable = require('tree-shaker/lib/observable');
+const Observable = require('lib/observable');
 
 describe('Observable', () => {
 	beforeEach(function() {
@@ -42,7 +42,7 @@ describe('Observable', () => {
 	});
 
 	it('listener should be called with state arg', function() {
-		this.observable.dispatch();
+		this.observable.dispatch(this.state);
 		expect(this.listener.firstCall.args[0]).to.be.equal(this.state);
 	});
 
