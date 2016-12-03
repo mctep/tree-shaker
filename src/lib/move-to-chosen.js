@@ -5,6 +5,34 @@ function moveToChosen(trees) {
 	const { available, chosen } = trees;
 	const availableList = available.toList();
 
+	const selected = _.filter(availableList, (node) => {
+		return node.data.selected;
+	});
+
+	let moving = [].concat(selected);
+
+	selected.forEach((node) => {
+		const sublist = [];
+
+		const hasSelectedDescendant = Tree.findFirst(node, (desc) => {
+			if (!desc.data.hidden) {
+				sublist.push(desc);
+			}
+
+			return desc.data.selected;
+		});
+
+		if (hasSelectedDescendant) {
+			return;
+		}
+
+		moving = moving.concat(sublist);
+	});
+
+	moving.forEach(move);
+
+	return trees;
+
 	function move(availableNode) {
 		const { id, data } = availableNode;
 
@@ -42,34 +70,6 @@ function moveToChosen(trees) {
 
 		return chosenNode;
 	}
-
-	const selected = _.filter(availableList, (node) => {
-		return node.data.selected;
-	});
-
-	let moving = [].concat(selected);
-
-	selected.forEach((node) => {
-		const sublist = [];
-
-		const hasSelectedDescendant = Tree.findFirst(node, (desc) => {
-			if (!desc.data.hidden) {
-				sublist.push(desc);
-			}
-
-			return desc.data.selected;
-		});
-
-		if (hasSelectedDescendant) {
-			return;
-		}
-
-		moving = moving.concat(sublist);
-	});
-
-	moving.forEach(move);
-
-	return trees;
 }
 
 

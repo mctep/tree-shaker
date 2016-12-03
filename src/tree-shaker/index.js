@@ -2,6 +2,7 @@ const $ = require('jquery');
 const Select = require('./components/select');
 const Tree = require('lib/tree');
 const moveToChosen = require('lib/move-to-chosen');
+const removeFromChosen = require('lib/remove-from-chosen');
 
 class TreeShaker {
 	constructor(props) {
@@ -109,12 +110,7 @@ class TreeShaker {
 		this.$removeFromChosenButton.attr({ disabled });
 	}
 
-	handleMoveToChosenClick() {
-		moveToChosen({
-			available: this.availableTree,
-			chosen: this.chosenTree,
-		});
-
+	refresh() {
 		this.refreshMoveToChosenButton();
 		this.refreshRemoveToChosenButton();
 		this.availableSelect.updateOptions();
@@ -123,30 +119,22 @@ class TreeShaker {
 		this.chosenSelect.render();
 	}
 
-	handleRemoveFromChosenClick() {
-		this.render();
+	handleMoveToChosenClick() {
+		moveToChosen({
+			available: this.availableTree,
+			chosen: this.chosenTree,
+		});
 
-		// const {
-		// 	availableDisabled,
-		// 	availableSelected,
-		// 	chosen,
-		// 	chosenSelected,
-		// } = removeSelectedNodesFromChosen({
-		// 	availableDisabled: this.availableSelect.disabledOptionsIds,
-		// 	chosen: this.chosenSelect.optionsIds,
-		// 	chosenSelected: this.chosenSelect.selectedOptionsIds,
-		// });
-		//
-		// this.availableSelect.disabledOptionsIds = availableDisabled;
-		// this.availableSelect.selectedOptionsIds = availableSelected;
-		// this.chosenSelect.setOptions(getNodesByIds(chosen));
-		// this.chosenSelect.visibleOptionsIds = chosen;
-		// this.chosenSelect.selectedOptionsIds = chosenSelected;
-		//
-		// this.refreshMoveToChosenButton();
-		// this.refreshRemoveToChosenButton();
-		// this.availableSelect.render();
-		// this.chosenSelect.render();
+		this.refresh();
+	}
+
+	handleRemoveFromChosenClick() {
+		removeFromChosen({
+			available: this.availableTree,
+			chosen: this.chosenTree,
+		});
+
+		this.refresh();
 	}
 }
 

@@ -122,7 +122,7 @@ class Tree {
 		node.prev = null;
 		node.parent = null;
 
-		this.index[id] = null;
+		delete this.index[id];
 	}
 
 	moveNodeToParent(node, parent) {

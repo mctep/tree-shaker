@@ -32,8 +32,8 @@ function parseLine(line) {
 		? path.slice(-2)[0]
 		: null;
 
-	const selected = line.match(/selected/);
-	const hidden = line.match(/hidden/);
+	const selected = Boolean(line.match(/selected/));
+	const hidden = Boolean(line.match(/hidden/));
 
 	return { hidden, id, parentId, selected };
 }
