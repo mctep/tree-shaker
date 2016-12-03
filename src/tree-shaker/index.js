@@ -1,5 +1,4 @@
 const $ = require('jquery');
-const _ = require('lodash');
 const SelectVirtual = require('./components/select-virtual');
 const Tree = require('lib/tree');
 const moveToChosen = require('lib/move-to-chosen');
@@ -27,15 +26,7 @@ class TreeShaker {
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
 			optionHeight: 20,
-			optionTemplate(option) {
-				const { data } = option;
-
-				const pad = _.map(Tree.getAncestors(option), () => {
-					return '—';
-				}).join('');
-
-				return `${pad} ${data.title}`;
-			},
+			optionTemplate: props.availableOptionTemplate,
 		});
 
 		this.chosenSelect = new SelectVirtual({
@@ -49,15 +40,7 @@ class TreeShaker {
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
 			optionHeight: 20,
-			optionTemplate(option) {
-				const { data } = option.data.availableNode;
-
-				const pad = _.map(Tree.getAncestors(option), () => {
-					return '—';
-				}).join('');
-
-				return `${pad} ${data.title}`;
-			},
+			optionTemplate: props.chosenOptionTemplate,
 		});
 
 		this.unsubscribe = this.props.nodesObservable.subscribe(

@@ -47,6 +47,9 @@ function makeLoaders() {
 	}, {
 		loaders: ['style-loader', 'css-loader'],
 		test: /\.css$/,
+	}, {
+		loaders: ['json-loader'],
+		test: /\.json/,
 	}];
 }
 
