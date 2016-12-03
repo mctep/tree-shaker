@@ -25,5 +25,12 @@ function parseData() {
 module.exports = function getTeamcityProjects(callback) {
 	setTimeout(() => {
 		callback(parseData());
+
+		// callback([
+		// 	{ id: '1', name: '1' },
+		// 	{ id: '1.1', name: '1.1', parentId: '1' },
+		// 	{ id: '2', name: '2' },
+		// 	{ id: '2.1', name: '2.1', parentId: '2' },
+		// ])
 	}, DELAY);
 };

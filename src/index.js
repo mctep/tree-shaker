@@ -36,7 +36,10 @@ const availableTemplates = {
 	},
 
 	updateElement(option, $element) {
-		return $element;
+		const { data } = option;
+		const pad = getPad(option);
+
+		return $element.html(`<div>${pad} ${data.name}</div>`);
 	},
 };
 
@@ -55,7 +58,10 @@ const chosenTemplates = {
 	},
 
 	updateElement(option, $element) {
-		return $element;
+		const { data } = option.data.availableNode;
+		const pad = getPad(option);
+
+		return $element.html(`<div>${pad} ${data.name}</div>`);
 	},
 };
 

@@ -144,6 +144,8 @@ class Tree {
 			parent.first = node;
 			parent.last = node;
 		}
+
+		this.index[node.id] = node;
 	}
 
 	addRawNode(rawNode) {
