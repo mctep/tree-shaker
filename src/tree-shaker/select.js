@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const $ = require('jquery');
-const selectRegion = require('lib/select-region');
-const cn = require('lib/classnames');
-const getVirtualScrolling = require('lib/get-virtual-scrolling');
+const selectRegion = require('./lib/select-region');
+const cn = require('./lib/classnames');
+const getVirtualScrolling = require('./lib/get-virtual-scrolling');
 
 const DBLCLICK_TIMEOUT = 200;
 

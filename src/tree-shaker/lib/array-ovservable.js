@@ -1,7 +1,7 @@
 const without = require('lodash/without');
 const includes = require('lodash/includes');
 const uniq = require('lodash/uniq');
-const Observable = require('lib/observable');
+const Observable = require('./observable');
 
 class ArrayModel extends Observable {
 	toggle(items) {

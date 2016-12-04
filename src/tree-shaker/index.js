@@ -1,11 +1,11 @@
 const _ = require('lodash');
 const Select = require('./select');
 const assembleElements = require('./assemble-elements');
-const Tree = require('lib/tree');
-const moveToChosen = require('lib/move-to-chosen');
-const removeFromChosen = require('lib/remove-from-chosen');
-const escapeRegexp = require('lib/escape-reg-exp');
-const { getNodesForSorting, moveUp, moveDown } = require('lib/sorting-nodes');
+const Tree = require('./lib/tree');
+const moveToChosen = require('./lib/move-to-chosen');
+const removeFromChosen = require('./lib/remove-from-chosen');
+const escapeRegexp = require('./lib/escape-reg-exp');
+const { getNodesForSorting, moveUp, moveDown } = require('./lib/sorting-nodes');
 
 
 function hasSomeSelectedNode(tree) {

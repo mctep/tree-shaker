@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { expect } = require('chai');
-const Tree = require('lib/tree');
+const Tree = require('tree-shaker/lib/tree');
 
 function makeSchema(list) {
 	return list.map((node) => {

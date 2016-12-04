@@ -1,5 +1,5 @@
 const { createMovingTester } = require('./test-tree-scheme');
-const removeFromChosen = require('lib/remove-from-chosen');
+const removeFromChosen = require('tree-shaker/lib/remove-from-chosen');
 
 const tester = createMovingTester();
 

@@ -1,9 +1,9 @@
 const _ = require('lodash');
 const $ = require('jquery');
 const classNames = require('./styles');
-const Tree = require('lib/tree');
-const cn = require('lib/classnames');
-const escapeHtml = require('lib/escape-html');
+const Tree = require('tree-shaker/lib/tree');
+const cn = require('tree-shaker/lib/classnames');
+const escapeHtml = require('tree-shaker/lib/escape-html');
 
 function getPad(option) {
 	const ancestors = Tree.getAncestors(option);
@@ -15,13 +15,27 @@ function getPad(option) {
 	}).join('');
 }
 
-function getButtonHtml(content, className) {
+function getButtonHtml(props) {
+	const { className, children } = props;
+
 	return `
 		<button class="${cn(classNames.button.button, className)}">
 			<span class=${classNames.button.content}>
-				${content}
+				${escapeHtml(children)}
 			</span>
 		</button>
+	`;
+}
+
+function getInputHtml(props) {
+	const { className, placeholder } = props;
+
+	return `
+		<input
+			placeholder="${escapeHtml(placeholder)}"
+			class="${cn(classNames.filter.input, className)}"
+			type="text"
+		/>
 	`;
 }
 
@@ -34,12 +48,6 @@ const templates = {
 
 			return $(`<div title="${name}">${pad} ${name}</div>`);
 		},
-
-		// getShadowElement(option) {
-		// 	const pad = getPad(option);
-		//
-		// 	return $(`<div>${pad}.......</div>`);
-		// },
 
 		updateElement(option, $element) {
 			const { data } = option;
@@ -58,12 +66,6 @@ const templates = {
 
 			return $(`<div title="${name}">${pad} ${name}</div>`);
 		},
-
-		// getShadowElement(option) {
-		// 	const pad = getPad(option);
-		//
-		// 	return $(`<div>${pad}.......</div>`);
-		// },
 
 		updateElement(option, $element) {
 			const { data } = option.data.availableNode;
@@ -88,25 +90,37 @@ const templates = {
 
 	moveDownButton: {
 		getElement() {
-			return $(getButtonHtml('↓', classNames.buttonsSort.button));
+			return $(getButtonHtml({
+				children: '↓',
+				className: classNames.buttonsSort.button,
+			}));
 		},
 	},
 
 	moveToChosenButton: {
 		getElement() {
-			return $(getButtonHtml('→', classNames.buttonsMove.button));
+			return $(getButtonHtml({
+				children: '→',
+				className: classNames.buttonsMove.button,
+			}));
 		},
 	},
 
 	moveUpButton: {
 		getElement() {
-			return $(getButtonHtml('↑', classNames.buttonsSort.button));
+			return $(getButtonHtml({
+				children: '↑',
+				className: classNames.buttonsSort.button,
+			}));
 		},
 	},
 
 	removeFromChosenButton: {
 		getElement() {
-			return $(getButtonHtml('←', classNames.buttonsMove.button));
+			return $(getButtonHtml({
+				children: '←',
+				className: classNames.buttonsMove.button,
+			}));
 		},
 	},
 };
@@ -114,5 +128,7 @@ const templates = {
 
 module.exports = {
 	classNames,
+	getButtonHtml,
+	getInputHtml,
 	templates,
 };

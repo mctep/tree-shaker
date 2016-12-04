@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const Tree = require('lib/tree');
+const Tree = require('tree-shaker/lib/tree');
 
 let idx = 0;
 

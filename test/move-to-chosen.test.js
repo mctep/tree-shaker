@@ -1,5 +1,5 @@
 const { createMovingTester } = require('./test-tree-scheme');
-const moveToChosen = require('lib/move-to-chosen');
+const moveToChosen = require('tree-shaker/lib/move-to-chosen');
 
 const tester = createMovingTester();
 

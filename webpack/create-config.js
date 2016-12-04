@@ -26,11 +26,11 @@ function makeEntry({ environment }) {
 	if (development) {
 		return [
 			'webpack-hot-middleware/client',
-			projectRoot('./src/index.js'),
+			projectRoot('./examples/index.js'),
 		];
 	}
 
-	return projectRoot('./src/index.js');
+	return projectRoot('./examples/index.js');
 }
 
 function makeLoaders() {
@@ -74,7 +74,7 @@ function makePlugins({ environment }) {
 		}),
 
 		new HtmlWebpackPlugin({
-			template: 'src/index.html.js',
+			template: 'examples/index.html.js',
 		}),
 	];
 

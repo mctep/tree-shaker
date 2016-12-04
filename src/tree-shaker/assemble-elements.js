@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const cn = require('lib/classnames');
+const cn = require('./lib/classnames');
 
 module.exports = function assembleElements(elements, classNames) {
 	const {

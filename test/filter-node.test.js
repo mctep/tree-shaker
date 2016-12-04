@@ -1,5 +1,5 @@
 const { createChangeTester } = require('./test-tree-scheme');
-const Tree = require('lib/tree');
+const Tree = require('tree-shaker/lib/tree');
 
 const tester = createChangeTester();
 
