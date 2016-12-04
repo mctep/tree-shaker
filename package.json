@@ -1,8 +1,15 @@
 {
   "name": "tree-shaker",
-  "version": "1.0.0",
-  "description": "",
-  "main": "lib/index.js",
+  "version": "0.0.0",
+  "description": "Tree Shaker Component",
+  "main": "build/dist/tree-shaker.min.js",
+  "jsnext:main": "src/tree-shaker/index.js",
+  "files": [
+    "build/dist/tree-shaker.min.js",
+    "build/theme/tree-shaker-theme.min.js",
+    "build/theme/tree-shaker-theme.min.css",
+    "src"
+  ],
   "scripts": {
     "test": "NODE_PATH=./src mocha $(find test -name '*.test.js')",
     "coverage": "NODE_PATH=./src node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- $(find test -name '*.test.js')",
@@ -13,10 +20,12 @@
     "build-theme": "webpack --config webpack/config/theme.js",
     "build-example": "webpack --config webpack/config/example.js",
     "example": "npm run build && cp build/{dist,theme}/* build/example && http-server build/example",
-    "precommit": "npm run lint && npm run coverage"
+    "precommit": "npm run lint && npm run coverage",
+    "prepublish": "npm run build"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "mctep",
+  "repository": "https://github.com/mctep/tree-shaker",
+  "license": "MIT",
   "moduleRoots": [
     "src"
   ],
