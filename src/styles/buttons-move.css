@@ -1,0 +1,13 @@
+.ts-buttons-move {
+	box-sizing: border-box;
+	display: inline-block;
+	vertical-align: middle;
+	width: 5em;
+	padding: 0 1em;
+	text-align: center;
+}
+
+.ts-button-move {
+	width: 100%;
+	margin: 1em 0;
+}

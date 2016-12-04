@@ -11,13 +11,12 @@ class Select {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleOptionClick = this.handleOptionClick.bind(this);
 
-		this.clearState();
 		this.props = {};
 
 		const classNames = this.props.classNames = {
 			disabled: _.get(props, 'classNames.disabled', ''),
-			list: _.get(props, 'classNames.list', ''),
 			option: _.get(props, 'classNames.option', ''),
+			select: _.get(props, 'classNames.select', ''),
 			selected: _.get(props, 'classNames.selected', ''),
 		};
 
@@ -27,25 +26,25 @@ class Select {
 		this.props.onSelect = props.onSelect;
 		this.props.onDblclick = props.onDblclick;
 		this.props.templates = props.templates;
+		this.props.getOptionById = props.getOptionById;
 
 		// it is needed because we use render as replacing html
 		this.dblclickTimeout = null;
 
-		this.$element = $(`<div class=${classNames.list}></div>`);
-		this.$element.height(this.props.height);
-
 		this.$topPad = $('<div></div>');
 		this.$bottomPad = $('<div></div>');
 
-		this.$element.prepend(this.$topPad);
-		this.$element.append(this.$bottomPad);
+		this.$element = $(`<div class="${classNames.select}"></div>`)
+		.height(this.props.height)
+		.prepend(this.$topPad)
+		.append(this.$bottomPad)
+		.on('scroll', this.handleScroll)
+		.delegate('[data-option-id]', 'click', this.handleOptionClick);
 
-		this.$element.on('scroll', this.handleScroll);
-		this.$element.delegate('[data-option-id]', 'click', this.handleOptionClick);
+		this.refresh();
 	}
 
 	clearState() {
-		this.tree = null;
 		this.options = [];
 		this.visibleOptions = [];
 		this.lastClicked = null;
@@ -53,18 +52,12 @@ class Select {
 		this.topPadHeight = 0;
 	}
 
-	setTree(tree) {
-		this.clearState();
-		this.tree = tree;
-		this.updateOptions();
-	}
-
-	updateOptions() {
-		this.options = this.tree.filterWithAncestors((node) => {
-			return !node.data.hidden;
-		});
+	refresh(options) {
+		this.options = options || [];
 		this.visibleOptions = [];
 		this.lastClicked = null;
+		this.bottomPadHeight = 0;
+		this.topPadHeight = 0;
 		this.updateScrolling();
 	}
 
@@ -130,7 +123,7 @@ class Select {
 
 	handleOptionClick(event) {
 		const id = $(event.currentTarget).data('option-id').toString();
-		const clicked = this.tree.getNodeById(id);
+		const clicked = this.props.getOptionById(id);
 		const availableForSelection = this.getAvailableIdsForSections();
 
 		if (!_.includes(availableForSelection, clicked)) {
@@ -254,7 +247,10 @@ class Select {
 				$updated = this.getOptionElement(option, $child);
 			}
 
-			$updated.insertAfter($prevChild);
+			if (!$updated.prev().is($prevChild)) {
+				$updated.insertAfter($prevChild);
+			}
+
 			$prevChild = $updated;
 		}
 	}

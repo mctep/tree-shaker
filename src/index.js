@@ -1,13 +1,13 @@
 const $ = require('jquery');
 const _ = require('lodash');
+
+const styles = require('./styles');
+
 const ArrayObservable = require('lib/array-ovservable');
 const getTeamcityProjects = require('lib/get-teamcity-projects');
 const Tree = require('lib/tree');
+const cn = require('lib/classnames');
 const TreeShaker = require('tree-shaker');
-
-
-// eslint-disable-next-line import/no-unassigned-import
-require('./style.css');
 
 const nodesObservable = new ArrayObservable([]);
 
@@ -29,11 +29,11 @@ const availableTemplates = {
 		return $(`<div>${pad} ${data.name}</div>`);
 	},
 
-	getShadowElement(option) {
-		const pad = getPad(option);
-
-		return $(`<div>${pad}.......</div>`);
-	},
+	// getShadowElement(option) {
+	// 	const pad = getPad(option);
+	//
+	// 	return $(`<div>${pad}.......</div>`);
+	// },
 
 	updateElement(option, $element) {
 		const { data } = option;
@@ -51,11 +51,11 @@ const chosenTemplates = {
 		return $(`<div>${pad} ${data.name}</div>`);
 	},
 
-	getShadowElement(option) {
-		const pad = getPad(option);
-
-		return $(`<div>${pad}.......</div>`);
-	},
+	// getShadowElement(option) {
+	// 	const pad = getPad(option);
+	//
+	// 	return $(`<div>${pad}.......</div>`);
+	// },
 
 	updateElement(option, $element) {
 		const { data } = option.data.availableNode;
@@ -65,10 +65,56 @@ const chosenTemplates = {
 	},
 };
 
+function getButtonHtml(content, className) {
+	return `
+		<button class="${cn(styles.button.button, className)}">
+			<span class=${styles.button.content}>
+				${content}
+			</span>
+		</button>
+	`;
+}
+
+const templates = {
+	available: availableTemplates,
+	chosen: chosenTemplates,
+
+	inputFilter: {
+		getElement() {
+			return $(`<input class="${styles.inputFilter}" type="text"/>`);
+		},
+	},
+
+	moveDownButton: {
+		getElement() {
+			return $(getButtonHtml('down'));
+		},
+	},
+
+	moveToChosenButton: {
+		getElement() {
+			return $(getButtonHtml('-&gt;', styles.buttonsMove.button));
+		},
+	},
+
+	moveUpButton: {
+		getElement() {
+			return $(getButtonHtml('up'));
+		},
+	},
+
+	removeFromChosenButton: {
+		getElement() {
+			return $(getButtonHtml('&lt;-', styles.buttonsMove.button));
+		},
+	},
+
+};
+
 const treeShaker = new TreeShaker({
-	availableTemplates,
-	chosenTemplates,
+	classNames: styles,
 	nodesObservable,
+	templates,
 });
 
 

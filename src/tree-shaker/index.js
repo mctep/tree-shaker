@@ -1,4 +1,5 @@
 const $ = require('jquery');
+const _ = require('lodash');
 const Select = require('./components/select');
 const Tree = require('lib/tree');
 const moveToChosen = require('lib/move-to-chosen');
@@ -20,10 +21,10 @@ class TreeShaker {
 	constructor(props) {
 		this.props = {};
 		this.props.nodesObservable = props.nodesObservable;
-		this.props.availableTemplates = props.availableTemplates;
-		this.props.chosenTemplates = props.chosenTemplates;
+		this.props.templates = props.templates;
+		this.props.classNames = props.classNames;
 
-		this.$element = $('<div></div>');
+		this.$element = $(`<div class="${props.classNames.container}"></div>`);
 
 		this.createAvailableSelect();
 		this.createChosenSelect();
@@ -38,76 +39,88 @@ class TreeShaker {
 	}
 
 	createAvailableSelect() {
+		const { classNames } = this.props;
+
 		this.handleMoveToChosenClick = this.handleMoveToChosenClick.bind(this);
 		this.handleAvailableSelect = this.handleAvailableSelect.bind(this);
 
+		const selectClassNames = _.assign({}, classNames.select, {
+			select: `${classNames.select.select} ${classNames.selectAvailable}`,
+		});
+
 		this.availableSelect = new Select({
-			classNames: {
-				disabled: 'disabled',
-				list: 'list',
-				option: 'node',
-				selected: 'selected',
+			classNames: selectClassNames,
+			getOptionById: (id) => {
+				return this.availableTree.getNodeById(id);
 			},
 			height: 600,
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
-			optionHeight: 20,
-			templates: this.props.availableTemplates,
+			optionHeight: 24,
+			templates: this.props.templates.available,
 		});
 
 		this.$element.append(this.availableSelect.$element);
 	}
 
 	createChosenSelect() {
+		const { classNames } = this.props;
+
 		this.handleRemoveFromChosenClick =
 		this.handleRemoveFromChosenClick.bind(this);
 		this.handleChosenSelect = this.handleChosenSelect.bind(this);
 
+		const selectClassNames = _.assign({}, classNames.select, {
+			select: `${classNames.select.select} ${classNames.selectChosen}`,
+		});
+
 		this.chosenSelect = new Select({
-			classNames: {
-				disabled: 'disabled',
-				list: 'list',
-				option: 'node',
-				selected: 'selected',
+			classNames: selectClassNames,
+			getOptionById: (id) => {
+				return this.chosenTree.getNodeById(id);
 			},
 			height: 600,
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
-			optionHeight: 20,
-			templates: this.props.chosenTemplates,
+			optionHeight: 24,
+			templates: this.props.templates.chosen,
 		});
 
 		this.$element.append(this.chosenSelect.$element);
 	}
 
 	createMovingButtons() {
-		this.$moveToChosenButton = $('<button type="button">-&gt;</button>')
+		const { classNames, templates } = this.props;
+
+		this.$moveToChosenButton = templates.moveToChosenButton.getElement()
 		.on('click', this.handleMoveToChosenClick);
-		this.$removeFromChosenButton = $('<button type="button">&lt;-</button>')
+
+		this.$removeFromChosenButton = templates.removeFromChosenButton.getElement()
 		.on('click', this.handleRemoveFromChosenClick);
 
-		const $movingButtons = $('<div></div>');
-
-		$movingButtons
+		const $movingButtons =
+		$(`<div class=${classNames.buttonsMove.container}></div>`)
 		.append(this.$moveToChosenButton)
 		.append(this.$removeFromChosenButton);
 
 		this.refreshMoveToChosenButton();
 		this.refreshRemoveToChosenButton();
 
-		this.$element.append($movingButtons);
+		$movingButtons.insertAfter(this.availableSelect.$element);
 	}
 
 	createSortingButtons() {
+		const { classNames, templates } = this.props;
+
 		this.handleMoveUpClick = this.handleMoveUpClick.bind(this);
 		this.handleMoveDownClick = this.handleMoveDownClick.bind(this);
 
-		this.$moveUpButton = $('<button type="button">up</button>')
+		this.$moveUpButton = templates.moveUpButton.getElement()
 		.on('click', this.handleMoveUpClick);
-		this.$moveDownButton = $('<button type="button">down</button>')
+		this.$moveDownButton = templates.moveDownButton.getElement()
 		.on('click', this.handleMoveDownClick);
 
-		const $sortingButtons = $('<div></div>');
+		const $sortingButtons = $(`<div class=${classNames.buttonsSort}></div>`);
 
 		$sortingButtons
 		.append(this.$moveUpButton)
@@ -120,8 +133,10 @@ class TreeShaker {
 	}
 
 	createFilterInput() {
+		const { templates } = this.props;
+
 		this.handleFilterInputChange = this.handleFilterInputChange.bind(this);
-		this.$filterInput = $('<input type="text" />')
+		this.$filterInput = templates.inputFilter.getElement()
 		.on('keyup', this.handleFilterInputChange);
 
 		this.$element.append(this.$filterInput);
@@ -130,12 +145,7 @@ class TreeShaker {
 	handleNodesUpdate(nodes) {
 		this.availableTree = new Tree(nodes);
 		this.chosenTree = new Tree([]);
-
-		this.availableSelect.setTree(this.availableTree);
-		this.chosenSelect.setTree(this.chosenTree);
-
-		this.availableSelect.render();
-		this.chosenSelect.render();
+		this.refresh();
 	}
 
 	handleAvailableSelect() {
@@ -227,14 +237,22 @@ class TreeShaker {
 	}
 
 	refresh() {
+		function visible(node) {
+			return !node.data.hidden;
+		}
+
+		this.availableSelect
+		.refresh(this.availableTree.filterWithAncestors(visible));
+		this.availableSelect.render();
+
+		this.chosenSelect
+		.refresh(this.chosenTree.filterWithAncestors(visible));
+		this.chosenSelect.render();
+
 		this.refreshMoveToChosenButton();
 		this.refreshRemoveToChosenButton();
 		this.refreshMoveUpButton();
 		this.refreshMoveDownButton();
-		this.availableSelect.updateOptions();
-		this.availableSelect.render();
-		this.chosenSelect.updateOptions();
-		this.chosenSelect.render();
 	}
 }
 

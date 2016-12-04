@@ -1,6 +1,21 @@
-module.exports = function classnames(object) {
-	return Object.keys(object).map((className) => {
-		return object[className] && className;
-	}).filter(Boolean)
-	.join(' ');
+const _ = require('lodash');
+
+module.exports = function classnames(...args) {
+	const object = {};
+
+	args.forEach((arg) => {
+		if (typeof arg === 'string') {
+			object[arg] = true;
+		}
+
+		if (typeof arg === 'object') {
+			_.assign(object, arg);
+		}
+	});
+
+	// console.log(object);
+
+	return _.map(object, (available, className) => {
+		return available && className;
+	}).join(' ');
 };

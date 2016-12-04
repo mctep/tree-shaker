@@ -1,0 +1,39 @@
+.ts-select {
+	height: 100%;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+	overflow: auto;
+	width: 200px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.ts-option {
+	box-sizing: border-box;
+	padding: 0.2em 0.5em;
+	cursor: pointer;
+	height: 24px;
+	transition: background 0.15s, color 0.15s;
+	user-select: none;
+
+	white-space: nowrap;
+}
+
+.ts-option:hover {
+	background: #ccc;
+}
+
+.ts-option.ts-selected {
+	background: #3879d9;
+	color: #fff;
+}
+
+.ts-option.ts-disabled {
+	background: transparent;
+	color: #ccc;
+}
+
+.ts-option.ts-disabled:hover {
+	cursor: default;
+}

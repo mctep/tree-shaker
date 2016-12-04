@@ -1,14 +1,9 @@
-.tree-shaker {
-	height: 200px;
+body {
+	font-size: 14px;
 }
 
-.list {
-	height: 100%;
-	border: 1px solid blue;
-	overflow: auto;
-	width: 150px;
-	display: inline-block;
-	vertical-align: middle;
+/*.tree-shaker {
+	height: 200px;
 }
 
 .node {
@@ -36,4 +31,4 @@
 .choose-buttons {
 	display: inline-block;
 	vertical-align: middle;
-}
+}*/
