@@ -20,7 +20,6 @@ class Select {
 			selected: _.get(props, 'classNames.selected', ''),
 		};
 
-		this.props.height = props.height;
 		this.props.optionHeight = props.optionHeight;
 		this.props.optionTemplate = props.optionTemplate;
 		this.props.onSelect = props.onSelect;
@@ -35,7 +34,6 @@ class Select {
 		this.$bottomPad = $('<div></div>');
 
 		this.$element = $(`<div class="${classNames.select}"></div>`)
-		.height(this.props.height)
 		.prepend(this.$topPad)
 		.append(this.$bottomPad)
 		.on('scroll', this.handleScroll)
@@ -44,12 +42,9 @@ class Select {
 		this.refresh();
 	}
 
-	clearState() {
-		this.options = [];
-		this.visibleOptions = [];
-		this.lastClicked = null;
-		this.bottomPadHeight = 0;
-		this.topPadHeight = 0;
+	updateHeight() {
+		this.height = this.$element.height();
+		this.handleScroll();
 	}
 
 	refresh(options) {
@@ -62,7 +57,7 @@ class Select {
 	}
 
 	updateScrolling() {
-		const containerHeight = this.props.height;
+		const containerHeight = this.height;
 		const currentVisibleItems = this.visibleOptions;
 		const itemHeight = this.props.optionHeight;
 		const items = this.options;
@@ -184,8 +179,7 @@ class Select {
 		const { id } = option;
 		const { disabled, selected } = option.data;
 
-		const className = cn({
-			[classNames.option]: true,
+		const className = cn(classNames.option, {
 			[classNames.disabled]: disabled,
 			[classNames.selected]: selected,
 		});

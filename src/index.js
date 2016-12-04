@@ -7,6 +7,7 @@ const ArrayObservable = require('lib/array-ovservable');
 const getTeamcityProjects = require('lib/get-teamcity-projects');
 const Tree = require('lib/tree');
 const cn = require('lib/classnames');
+const escapeHtml = require('lib/escape-html');
 const TreeShaker = require('tree-shaker');
 
 const nodesObservable = new ArrayObservable([]);
@@ -24,9 +25,10 @@ function getPad(option) {
 const availableTemplates = {
 	getElement(option) {
 		const { data } = option;
+		const name = escapeHtml(data.name);
 		const pad = getPad(option);
 
-		return $(`<div>${pad} ${data.name}</div>`);
+		return $(`<div title="${name}">${pad} ${name}</div>`);
 	},
 
 	// getShadowElement(option) {
@@ -37,18 +39,20 @@ const availableTemplates = {
 
 	updateElement(option, $element) {
 		const { data } = option;
+		const name = escapeHtml(data.name);
 		const pad = getPad(option);
 
-		return $element.html(`<div>${pad} ${data.name}</div>`);
+		return $element.html(`<div title="${name}">${pad} ${name}</div>`);
 	},
 };
 
 const chosenTemplates = {
 	getElement(option) {
 		const { data } = option.data.availableNode;
+		const name = escapeHtml(data.name);
 		const pad = getPad(option);
 
-		return $(`<div>${pad} ${data.name}</div>`);
+		return $(`<div title="${name}">${pad} ${name}</div>`);
 	},
 
 	// getShadowElement(option) {
@@ -59,9 +63,10 @@ const chosenTemplates = {
 
 	updateElement(option, $element) {
 		const { data } = option.data.availableNode;
+		const name = escapeHtml(data.name);
 		const pad = getPad(option);
 
-		return $element.html(`<div>${pad} ${data.name}</div>`);
+		return $element.html(`<div title="${name}">${pad} ${name}</div>`);
 	},
 };
 
@@ -81,31 +86,33 @@ const templates = {
 
 	inputFilter: {
 		getElement() {
-			return $(`<input class="${styles.inputFilter}" type="text"/>`);
+			return $(`
+				<input placeholder="Filter" class="${styles.filter.input}" type="text"/>
+			`);
 		},
 	},
 
 	moveDownButton: {
 		getElement() {
-			return $(getButtonHtml('down'));
+			return $(getButtonHtml('↓', styles.buttonsSort.button));
 		},
 	},
 
 	moveToChosenButton: {
 		getElement() {
-			return $(getButtonHtml('-&gt;', styles.buttonsMove.button));
+			return $(getButtonHtml('→', styles.buttonsMove.button));
 		},
 	},
 
 	moveUpButton: {
 		getElement() {
-			return $(getButtonHtml('up'));
+			return $(getButtonHtml('↑', styles.buttonsSort.button));
 		},
 	},
 
 	removeFromChosenButton: {
 		getElement() {
-			return $(getButtonHtml('&lt;-', styles.buttonsMove.button));
+			return $(getButtonHtml('←', styles.buttonsMove.button));
 		},
 	},
 
@@ -119,6 +126,8 @@ const treeShaker = new TreeShaker({
 
 
 $('#example').append(treeShaker.$element);
+
+treeShaker.updateHeight();
 
 getTeamcityProjects((nodes) => {
 	nodesObservable.set(nodes);

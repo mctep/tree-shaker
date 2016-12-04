@@ -1,9 +1,10 @@
 /* eslint import/no-unassigned-import:off */
 require('./normalize.css');
-require('./style.css');
 require('./select.css');
+require('./input.css');
 require('./button.css');
-require('./buttons-move.css');
+require('./buttons.css');
+require('./style.css');
 
 module.exports = {
 	button: {
@@ -13,14 +14,25 @@ module.exports = {
 
 	buttonsMove: {
 		button: 'ts-button-move',
-		container: 'ts-buttons-move',
+		container: 'ts-buttons',
+		content: 'ts-buttons-content',
 	},
 
-	buttonsSort: 'ts-buttons-sort',
+	buttonsSort: {
+		button: 'ts-button-sort',
+		container: 'ts-buttons',
+		content: 'ts-buttons-content',
+	},
+
+	columnAvailable: 'ts-column ts-column-available',
+	columnChosen: 'ts-column ts-column-chosen',
 
 	container: 'ts-container',
 
-	inputFilter: 'ts-input-filter',
+	filter: {
+		container: 'ts-filter-container',
+		input: 'ts-input ts-filter-input',
+	},
 
 	select: {
 		disabled: 'ts-disabled',

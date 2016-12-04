@@ -1,11 +1,12 @@
-const $ = require('jquery');
 const _ = require('lodash');
-const Select = require('./components/select');
+const Select = require('./select');
+const assembleElements = require('./assemble-elements');
 const Tree = require('lib/tree');
 const moveToChosen = require('lib/move-to-chosen');
 const removeFromChosen = require('lib/remove-from-chosen');
 const escapeRegexp = require('lib/escape-reg-exp');
 const { getNodesForSorting, moveUp, moveDown } = require('lib/sorting-nodes');
+
 
 function hasSomeSelectedNode(tree) {
 	if (!tree) {
@@ -24,8 +25,6 @@ class TreeShaker {
 		this.props.templates = props.templates;
 		this.props.classNames = props.classNames;
 
-		this.$element = $(`<div class="${props.classNames.container}"></div>`);
-
 		this.createAvailableSelect();
 		this.createChosenSelect();
 		this.createMovingButtons();
@@ -36,6 +35,8 @@ class TreeShaker {
 		this.unsubscribe = this.props.nodesObservable.subscribe(
 			this.handleNodesUpdate
 		);
+
+		this.assembleElements();
 	}
 
 	createAvailableSelect() {
@@ -59,8 +60,6 @@ class TreeShaker {
 			optionHeight: 24,
 			templates: this.props.templates.available,
 		});
-
-		this.$element.append(this.availableSelect.$element);
 	}
 
 	createChosenSelect() {
@@ -85,12 +84,10 @@ class TreeShaker {
 			optionHeight: 24,
 			templates: this.props.templates.chosen,
 		});
-
-		this.$element.append(this.chosenSelect.$element);
 	}
 
 	createMovingButtons() {
-		const { classNames, templates } = this.props;
+		const { templates } = this.props;
 
 		this.$moveToChosenButton = templates.moveToChosenButton.getElement()
 		.on('click', this.handleMoveToChosenClick);
@@ -98,19 +95,12 @@ class TreeShaker {
 		this.$removeFromChosenButton = templates.removeFromChosenButton.getElement()
 		.on('click', this.handleRemoveFromChosenClick);
 
-		const $movingButtons =
-		$(`<div class=${classNames.buttonsMove.container}></div>`)
-		.append(this.$moveToChosenButton)
-		.append(this.$removeFromChosenButton);
-
 		this.refreshMoveToChosenButton();
 		this.refreshRemoveToChosenButton();
-
-		$movingButtons.insertAfter(this.availableSelect.$element);
 	}
 
 	createSortingButtons() {
-		const { classNames, templates } = this.props;
+		const { templates } = this.props;
 
 		this.handleMoveUpClick = this.handleMoveUpClick.bind(this);
 		this.handleMoveDownClick = this.handleMoveDownClick.bind(this);
@@ -120,16 +110,8 @@ class TreeShaker {
 		this.$moveDownButton = templates.moveDownButton.getElement()
 		.on('click', this.handleMoveDownClick);
 
-		const $sortingButtons = $(`<div class=${classNames.buttonsSort}></div>`);
-
-		$sortingButtons
-		.append(this.$moveUpButton)
-		.append(this.$moveDownButton);
-
 		this.refreshMoveUpButton();
 		this.refreshMoveDownButton();
-
-		this.$element.append($sortingButtons);
 	}
 
 	createFilterInput() {
@@ -138,8 +120,6 @@ class TreeShaker {
 		this.handleFilterInputChange = this.handleFilterInputChange.bind(this);
 		this.$filterInput = templates.inputFilter.getElement()
 		.on('keyup', this.handleFilterInputChange);
-
-		this.$element.append(this.$filterInput);
 	}
 
 	handleNodesUpdate(nodes) {
@@ -253,6 +233,36 @@ class TreeShaker {
 		this.refreshRemoveToChosenButton();
 		this.refreshMoveUpButton();
 		this.refreshMoveDownButton();
+	}
+
+	updateHeight() {
+		this.availableSelect.updateHeight();
+		this.chosenSelect.updateHeight();
+	}
+
+	assembleElements() {
+		const { classNames } = this.props;
+
+		const {
+			$filterInput,
+			$moveToChosenButton,
+			$removeFromChosenButton,
+			$moveUpButton,
+			$moveDownButton,
+		} = this;
+
+		const $availableSelect = this.availableSelect.$element;
+		const $chosenSelect = this.chosenSelect.$element;
+
+		this.$element = assembleElements({
+			$availableSelect,
+			$chosenSelect,
+			$filterInput,
+			$moveDownButton,
+			$moveToChosenButton,
+			$moveUpButton,
+			$removeFromChosenButton,
+		}, classNames);
 	}
 }
 

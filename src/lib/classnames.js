@@ -17,5 +17,5 @@ module.exports = function classnames(...args) {
 
 	return _.map(object, (available, className) => {
 		return available && className;
-	}).join(' ');
+	}).filter(Boolean).join(' ');
 };

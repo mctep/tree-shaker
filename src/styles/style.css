@@ -2,33 +2,55 @@ body {
 	font-size: 14px;
 }
 
-/*.tree-shaker {
-	height: 200px;
+.ts-container {
+	box-sizing: border-box;
+
+	width: 100%;
+	height: 100%;
+	padding: 1em;
 }
 
-.node {
-	height: 20px;
-	white-space: nowrap;
-	overflow: disabled;
-	text-overflow: ellipsis;
-	cursor: pointer;
-}
-
-.node:hover {
-	background: #ccc;
-}
-
-.node.selected {
-	background: #3879d9;
-	color: #fff;
-}
-
-.node.disabled {
-	background: transparent;
-	color: #ccc;
-}
-
-.choose-buttons {
+.ts-column {
+	width: 50%;
+	height: 100%;
 	display: inline-block;
-	vertical-align: middle;
-}*/
+	vertical-align: top;
+	position: relative;
+}
+
+.ts-select-available {
+	position: absolute;
+	top: 3em;
+	left: 0;
+	right: 7em;
+	bottom: 0;
+}
+
+.ts-select-chosen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 7em;
+	bottom: 0;
+}
+
+.ts-buttons {
+	box-sizing: border-box;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 7em;
+	padding: 1em;
+}
+
+.ts-filter-container {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 7em;
+}
+
+.ts-filter-input {
+	width: 100%;
+}

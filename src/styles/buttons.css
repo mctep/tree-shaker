@@ -1,0 +1,23 @@
+.ts-buttons {
+	height: 100%;
+	text-align: center;
+}
+
+.ts-buttons:before {
+	content: '';
+	height: 100%;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+.ts-buttons-content {
+	display: inline-block;
+	vertical-align: middle;
+	width: 100%;
+}
+
+.ts-button-move,
+.ts-button-sort {
+	width: 100%;
+	margin: 1em 0;
+}

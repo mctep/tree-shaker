@@ -1,12 +1,8 @@
 .ts-select {
-	height: 100%;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
 	box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
 	overflow: auto;
-	width: 200px;
-	display: inline-block;
-	vertical-align: middle;
 }
 
 .ts-option {
