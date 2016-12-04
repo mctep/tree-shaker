@@ -2,9 +2,11 @@ const _ = require('lodash');
 const $ = require('jquery');
 const selectRegion = require('./lib/select-region');
 const cn = require('./lib/classnames');
+const getIEVersion = require('./lib/get-ie-version');
 const getVirtualScrolling = require('./lib/get-virtual-scrolling');
 
 const DBLCLICK_TIMEOUT = 200;
+const IE_VERSION_SUPPORTS_USER_SELECT = 10;
 
 class Select {
 	constructor(props) {
@@ -38,6 +40,14 @@ class Select {
 		.append(this.$bottomPad)
 		.on('scroll', this.handleScroll)
 		.delegate('[data-option-id]', 'click', this.handleOptionClick);
+
+		const ieVerstion = getIEVersion();
+
+		if (ieVerstion && ieVerstion < IE_VERSION_SUPPORTS_USER_SELECT) {
+			this.$element.on('selectstart', () => {
+				return false;
+			});
+		}
 
 		this.refresh();
 	}
@@ -166,7 +176,7 @@ class Select {
 				return 'region';
 			}
 
-			if (event.ctrlKey || event.metaKey) {
+			if (_.some([event.ctrlKey, event.metaKey, event.altKey])) {
 				return 'toggle';
 			}
 
