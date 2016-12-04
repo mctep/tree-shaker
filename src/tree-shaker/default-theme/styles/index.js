@@ -31,8 +31,10 @@ module.exports = {
 
 	filter: {
 		container: 'ts-filter-container',
-		input: 'ts-input ts-filter-input',
+		input: 'ts-filter-input',
 	},
+
+	input: 'ts-input',
 
 	select: {
 		disabled: 'ts-disabled',

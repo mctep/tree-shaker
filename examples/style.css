@@ -1,0 +1,21 @@
+body {
+	font-size: 14px;
+}
+
+.example-form {
+	padding: 0 1em;
+	min-width: 600px;
+}
+
+.example-column {
+	display: inline-block;
+	width: 50%;
+}
+
+.example-container {
+	height: 500px;
+}
+
+.example-input-count {
+	width: 6em;
+}

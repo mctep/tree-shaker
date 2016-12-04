@@ -7,6 +7,8 @@ const removeFromChosen = require('./lib/remove-from-chosen');
 const escapeRegexp = require('./lib/escape-reg-exp');
 const { getNodesForSorting, moveUp, moveDown } = require('./lib/sorting-nodes');
 
+// from default-theme/styles/select.css
+const DEFAULT_OPTION_HEIGHT = 24;
 
 function hasSomeSelectedNode(tree) {
 	if (!tree) {
@@ -54,10 +56,9 @@ class TreeShaker {
 			getOptionById: (id) => {
 				return this.availableTree.getNodeById(id);
 			},
-			height: 600,
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
-			optionHeight: 24,
+			optionHeight: DEFAULT_OPTION_HEIGHT,
 			templates: this.props.templates.available,
 		});
 	}
@@ -78,10 +79,9 @@ class TreeShaker {
 			getOptionById: (id) => {
 				return this.chosenTree.getNodeById(id);
 			},
-			height: 600,
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
-			optionHeight: 24,
+			optionHeight: DEFAULT_OPTION_HEIGHT,
 			templates: this.props.templates.chosen,
 		});
 	}

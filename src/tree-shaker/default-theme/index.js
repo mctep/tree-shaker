@@ -19,7 +19,7 @@ function getButtonHtml(props) {
 	const { className, children } = props;
 
 	return `
-		<button class="${cn(classNames.button.button, className)}">
+		<button type="button" class="${cn(classNames.button.button, className)}">
 			<span class=${classNames.button.content}>
 				${escapeHtml(children)}
 			</span>
@@ -33,7 +33,7 @@ function getInputHtml(props) {
 	return `
 		<input
 			placeholder="${escapeHtml(placeholder)}"
-			class="${cn(classNames.filter.input, className)}"
+			class="${cn(classNames.input, className)}"
 			type="text"
 		/>
 	`;
@@ -78,13 +78,10 @@ const templates = {
 
 	inputFilter: {
 		getElement() {
-			return $(`
-				<input
-					placeholder="Filter"
-					class="${classNames.filter.input}"
-					type="text"
-				/>
-			`);
+			return $(getInputHtml({
+				className: classNames.filter.input,
+				placeholder: 'Filter',
+			}));
 		},
 	},
 

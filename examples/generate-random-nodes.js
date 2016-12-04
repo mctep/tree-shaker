@@ -95,7 +95,7 @@ module.exports = function generateRandomNodes(count) {
 	while (step) {
 		const node = {
 			id: `${step}`,
-			title: randomTitle(),
+			name: randomTitle(),
 		};
 
 		makeChild(node);
