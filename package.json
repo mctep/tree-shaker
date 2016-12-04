@@ -2,19 +2,19 @@
   "name": "tree-shaker",
   "version": "0.0.1",
   "description": "Tree Shaker Component",
-  "main": "src/tree-shaker/index.js",
+  "main": "lib/tree-shaker/index.js",
+  "jsnext:main": "src/tree-shaker/index.js",
   "files": [
-    "build/dist/tree-shaker.min.js",
-    "build/theme/tree-shaker-theme.min.js",
-    "build/theme/tree-shaker-theme.min.css",
-    "src"
+    "build",
+    "src",
+    "lib"
   ],
   "scripts": {
     "test": "NODE_PATH=./src mocha $(find test -name '*.test.js')",
     "coverage": "NODE_PATH=./src node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- $(find test -name '*.test.js')",
     "lint": "eslint .",
     "start": "node webpack/dev-server.js",
-    "build": "npm run build-dist && npm run build-theme && npm run build-example",
+    "build": "npm run build-dist && npm run build-theme && npm run build-example && babel ./src -d ./lib",
     "build-dist": "webpack --config webpack/config/dist.js",
     "build-theme": "webpack --config webpack/config/theme.js",
     "build-example": "webpack --config webpack/config/example.js",
@@ -30,6 +30,7 @@
   ],
   "devDependencies": {
     "autoprefixer": "6.5.3",
+    "babel-cli": "6.18.0",
     "babel-core": "6.18.2",
     "babel-eslint": "7.1.1",
     "babel-loader": "6.2.8",
