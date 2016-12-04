@@ -1,6 +1,6 @@
 {
   "name": "tree-shaker",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Tree Shaker Component",
   "main": "lib/tree-shaker/index.js",
   "jsnext:main": "src/tree-shaker/index.js",
