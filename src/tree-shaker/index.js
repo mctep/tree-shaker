@@ -23,7 +23,6 @@ function hasSomeSelectedNode(tree) {
 class TreeShaker {
 	constructor(props) {
 		this.props = {};
-		this.props.nodesObservable = props.nodesObservable;
 		this.props.templates = props.templates;
 		this.props.classNames = props.classNames;
 
@@ -32,11 +31,6 @@ class TreeShaker {
 		this.createMovingButtons();
 		this.createSortingButtons();
 		this.createFilterInput();
-
-		this.handleNodesUpdate = this.handleNodesUpdate.bind(this);
-		this.unsubscribe = this.props.nodesObservable.subscribe(
-			this.handleNodesUpdate
-		);
 
 		this.assembleElements();
 	}
@@ -122,7 +116,7 @@ class TreeShaker {
 		.on('keyup', this.handleFilterInputChange);
 	}
 
-	handleNodesUpdate(nodes) {
+	setNodes(nodes) {
 		this.availableTree = new Tree(nodes);
 		this.chosenTree = new Tree([]);
 		this.refresh();
@@ -265,5 +259,7 @@ class TreeShaker {
 		}, classNames);
 	}
 }
+
+TreeShaker.Tree = Tree;
 
 module.exports = TreeShaker;

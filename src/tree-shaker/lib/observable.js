@@ -1,4 +1,4 @@
-const includes = require('lodash/includes');
+const _ = require('lodash');
 
 module.exports = class Observable {
 	constructor(state) {
@@ -7,7 +7,7 @@ module.exports = class Observable {
 	}
 
 	subscribe(listener) {
-		if (!includes(this.listeners, listener)) {
+		if (!_.includes(this.listeners, listener)) {
 			this.listeners.push(listener);
 		}
 

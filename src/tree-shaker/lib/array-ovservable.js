@@ -1,6 +1,4 @@
-const without = require('lodash/without');
-const includes = require('lodash/includes');
-const uniq = require('lodash/uniq');
+const _ = require('lodash');
 const Observable = require('./observable');
 
 class ArrayModel extends Observable {
@@ -8,8 +6,8 @@ class ArrayModel extends Observable {
 		const { state } = this;
 
 		items.forEach((item) => {
-			if (includes(state, item)) {
-				this.dispatch(without(state, item));
+			if (_.includes(state, item)) {
+				this.dispatch(_.without(state, item));
 			} else {
 				this.dispatch(state.concat(item));
 			}
@@ -19,13 +17,13 @@ class ArrayModel extends Observable {
 	add(items) {
 		const { state } = this;
 
-		this.dispatch(uniq(state.concat(items)));
+		this.dispatch(_.uniq(state.concat(items)));
 	}
 
 	remove(items) {
 		const { state } = this;
 
-		this.dispatch(without(state, ...items));
+		this.dispatch(_.without(state, ...items));
 	}
 
 	set(items) {

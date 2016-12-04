@@ -8,6 +8,7 @@
     "coverage": "NODE_PATH=./src node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- $(find test -name '*.test.js')",
     "lint": "eslint .",
     "start": "node webpack/dev-server.js",
+    "build": "node webpack/build.js",
     "precommit": "npm run lint && npm run coverage"
   },
   "author": "",
@@ -27,6 +28,7 @@
     "css-loader": "0.26.1",
     "eslint-config-mctep": "0.0.2",
     "express": "4.14.0",
+    "extract-text-webpack-plugin": "2.0.0-beta.4",
     "html-webpack-plugin": "2.24.1",
     "husky": "0.11.9",
     "istanbul": "0.4.5",

@@ -11,24 +11,20 @@ const logger = new Console(process.stdout, process.stderr);
 
 const PORT_DEFAULT = 8080;
 const HOST_DEFAULT = '0.0.0.0';
-const ENV_DEFAULT = 'development';
 const HTTP_STATUS_NO_CONTENT = 201;
 
 const argv = yargs
   .default('port', PORT_DEFAULT)
   .default('host', HOST_DEFAULT)
-	.default('environment', ENV_DEFAULT)
   .alias('p', 'port')
   .alias('h', 'host')
-  .alias('env', 'environment')
-  .alias('e', 'environment')
 .argv;
 
-const { port, host, environment } = argv;
+const { port, host } = argv;
 
 const app = express();
 
-const compiler = webpack(createWebpackConfig({ environment }));
+const compiler = webpack(createWebpackConfig());
 
 app.get('/favicon.ico', (req, res) => {
 	res.status(HTTP_STATUS_NO_CONTENT).send();

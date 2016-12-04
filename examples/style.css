@@ -17,5 +17,11 @@ body {
 }
 
 .example-input-count {
-	width: 6em;
+	width: 4em;
+	text-align: right;
+}
+
+.example-annotation {
+	font-size: 0.9em;
+	color: #aaa;
 }

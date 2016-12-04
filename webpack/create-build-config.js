@@ -1,12 +1,17 @@
 const path = require('path');
-const webpack = require('webpack');
+
+// const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const {
-	HotModuleReplacementPlugin,
-	NoErrorsPlugin,
-} = webpack;
+// const {
+//   UglifyJsPlugin,
+// 	CommonsChunkPlugin,
+// } = webpack.optimize;
+
+const exampleStyles = new ExtractTextPlugin('example.css');
+const treeShakerStyles = new ExtractTextPlugin('tree-shaker-theme.css');
 
 function basedir(...args) {
 	return path.resolve(__dirname, ...args);
@@ -17,10 +22,18 @@ function projectRoot(...args) {
 }
 
 function makeEntry() {
-	return [
-		'webpack-hot-middleware/client',
-		projectRoot('./examples/index.js'),
-	];
+	return {
+		example: projectRoot('./examples/index.js'),
+		'tree-shaker': [projectRoot('./src/tree-shaker/index.js')],
+		'tree-shaker-theme': [projectRoot('./src/tree-shaker-theme/index.js')],
+	};
+}
+
+function makeExternals() {
+	return {
+		jquery: 'jQuery',
+		lodash: '_',
+	};
 }
 
 function makeLoaders() {
@@ -35,8 +48,17 @@ function makeLoaders() {
 		},
 		test: /\.js$/,
 	}, {
-		loaders: ['style-loader', 'css-loader?importLoaders=1', 'postcss-loader'],
-		test: /\.css$/,
+		loader: treeShakerStyles.extract({
+			fallbackLoader: 'style-loader',
+			loader: 'css-loader?importLoaders=1!postcss-loader',
+		}),
+		test: /tree-shaker.*\.css$/,
+	}, {
+		loader: exampleStyles.extract({
+			fallbackLoader: 'style-loader',
+			loader: 'css-loader?importLoaders=1!postcss-loader',
+		}),
+		test: /example.*\.css$/,
 	}, {
 		loaders: ['json-loader'],
 		test: /\.json/,
@@ -45,7 +67,9 @@ function makeLoaders() {
 
 function makeOutput() {
 	return {
-		filename: 'index.js',
+		filename: '[name].js',
+		library: 'TreeShaker',
+		libraryTarget: 'umd',
 		path: projectRoot('./build'),
 		publicPath: '/',
 	};
@@ -57,12 +81,12 @@ function makePlugins() {
 			root: projectRoot('.'),
 		}),
 
+		// new UglifyJsPlugin(),
 		new HtmlWebpackPlugin({
 			template: 'examples/index.html.js',
 		}),
-
-		new HotModuleReplacementPlugin(),
-		new NoErrorsPlugin(),
+		exampleStyles,
+		treeShakerStyles,
 	];
 }
 
@@ -77,6 +101,7 @@ module.exports = function createWebpackConfig() {
 	return {
 		context: projectRoot('.'),
 		entry: makeEntry(),
+		externals: makeExternals(),
 		module: {
 			loaders: makeLoaders(),
 		},

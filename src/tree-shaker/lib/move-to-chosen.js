@@ -11,7 +11,10 @@ function moveToChosen(trees) {
 
 	let moving = [].concat(selected);
 
-	selected.forEach((node) => {
+	const length = selected.length;
+
+	for (let idx = 0; idx < length; idx += 1) {
+		const node = selected[idx];
 		const sublist = [];
 
 		const hasSelectedDescendant = Tree.findFirst(node, (desc) => {
@@ -22,12 +25,10 @@ function moveToChosen(trees) {
 			return desc.data.selected;
 		});
 
-		if (hasSelectedDescendant) {
-			return;
+		if (!hasSelectedDescendant) {
+			moving = moving.concat(sublist);
 		}
-
-		moving = moving.concat(sublist);
-	});
+	}
 
 	moving.forEach(move);
 

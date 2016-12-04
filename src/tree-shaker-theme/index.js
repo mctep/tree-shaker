@@ -1,9 +1,10 @@
 const _ = require('lodash');
 const $ = require('jquery');
 const classNames = require('./styles');
-const Tree = require('tree-shaker/lib/tree');
-const cn = require('tree-shaker/lib/classnames');
-const escapeHtml = require('tree-shaker/lib/escape-html');
+const cn = require('./lib/classnames');
+const escapeHtml = require('./lib/escape-html');
+
+const { Tree } = require('tree-shaker');
 
 function getPad(option) {
 	const ancestors = Tree.getAncestors(option);
