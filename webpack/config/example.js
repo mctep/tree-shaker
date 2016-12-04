@@ -5,28 +5,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-// const {
-//   UglifyJsPlugin,
-// 	CommonsChunkPlugin,
-// } = webpack.optimize;
-
-const exampleStyles = new ExtractTextPlugin('example.css');
-const treeShakerStyles = new ExtractTextPlugin('tree-shaker-theme.css');
-
 function basedir(...args) {
 	return path.resolve(__dirname, ...args);
 }
 
 function projectRoot(...args) {
-	return path.resolve(basedir('../', ...args));
+	return path.resolve(basedir('../..', ...args));
 }
 
 function makeEntry() {
-	return {
-		example: projectRoot('./examples/index.js'),
-		'tree-shaker': [projectRoot('./src/tree-shaker/index.js')],
-		'tree-shaker-theme': [projectRoot('./src/tree-shaker-theme/index.js')],
-	};
+	return projectRoot('./example/index.js');
 }
 
 function makeExternals() {
@@ -50,53 +38,41 @@ function makeLoaders() {
 		},
 		test: /\.js$/,
 	}, {
-		loader: treeShakerStyles.extract({
+		loader: ExtractTextPlugin.extract({
 			fallbackLoader: 'style-loader',
 			loader: 'css-loader?importLoaders=1!postcss-loader',
 		}),
-		test: /tree-shaker.*\.css$/,
+		test: /\.css$/,
 	}, {
-		loader: exampleStyles.extract({
-			fallbackLoader: 'style-loader',
-			loader: 'css-loader?importLoaders=1!postcss-loader',
-		}),
-		test: /example.*\.css$/,
-	}, {
-		loaders: ['json-loader'],
+		loaders: ['file-loader'],
 		test: /\.json/,
 	}];
 }
 
 function makeOutput() {
 	return {
-		filename: '[name].js',
-		library: 'TreeShaker',
+		filename: 'index.js',
+		library: 'TreeShakerExample',
 		libraryTarget: 'umd',
-		path: projectRoot('./build'),
-		publicPath: '/',
+		path: projectRoot('./build/example'),
+		publicPath: './',
 	};
 }
 
 function makePlugins() {
 	return [
-		new CleanWebpackPlugin([projectRoot('./build')], {
+		new CleanWebpackPlugin([projectRoot('./build/example')], {
 			root: projectRoot('.'),
 		}),
 
-		// new UglifyJsPlugin(),
 		new HtmlWebpackPlugin({
-			template: 'examples/index.html.js',
+			environment: 'production',
+			favicon: projectRoot('./example/favicon.ico'),
+			template: 'example/index.html.js',
 		}),
-		exampleStyles,
-		treeShakerStyles,
-	];
-}
 
-function makeResolve() {
-	return {
-		mainFields: ['jsnext:main', 'main'],
-		modules: ['src', 'node_modules'],
-	};
+		new ExtractTextPlugin('example.css'),
+	];
 }
 
 module.exports = function createWebpackConfig() {
@@ -109,6 +85,5 @@ module.exports = function createWebpackConfig() {
 		},
 		output: makeOutput(),
 		plugins: makePlugins(),
-		resolve: makeResolve(),
 	};
 };

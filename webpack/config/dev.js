@@ -13,13 +13,13 @@ function basedir(...args) {
 }
 
 function projectRoot(...args) {
-	return path.resolve(basedir('../', ...args));
+	return path.resolve(basedir('../..', ...args));
 }
 
 function makeEntry() {
 	return [
 		'webpack-hot-middleware/client',
-		projectRoot('./examples/index.js'),
+		projectRoot('./example/index.js'),
 	];
 }
 
@@ -38,7 +38,7 @@ function makeLoaders() {
 		loaders: ['style-loader', 'css-loader?importLoaders=1', 'postcss-loader'],
 		test: /\.css$/,
 	}, {
-		loaders: ['json-loader'],
+		loaders: ['file-loader'],
 		test: /\.json/,
 	}];
 }
@@ -46,19 +46,20 @@ function makeLoaders() {
 function makeOutput() {
 	return {
 		filename: 'index.js',
-		path: projectRoot('./build'),
+		path: projectRoot('./build/dev-server'),
 		publicPath: '/',
 	};
 }
 
 function makePlugins() {
 	return [
-		new CleanWebpackPlugin([projectRoot('./build')], {
+		new CleanWebpackPlugin([projectRoot('./build/dev-server')], {
 			root: projectRoot('.'),
 		}),
 
 		new HtmlWebpackPlugin({
-			template: 'examples/index.html.js',
+			favicon: projectRoot('./example/favicon.ico'),
+			template: 'example/index.html.js',
 		}),
 
 		new HotModuleReplacementPlugin(),

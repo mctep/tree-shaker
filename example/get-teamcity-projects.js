@@ -1,9 +1,8 @@
 const _ = require('lodash');
-const data = require('./teamcity-projects.json');
+const $ = require('jquery');
+const DATA_URI = require('./teamcity-projects.json');
 
-const DELAY = 0;
-
-function parseData() {
+function parseData(data) {
 	const result = [];
 	const length = data.project.length;
 
@@ -25,7 +24,7 @@ function parseData() {
 }
 
 module.exports = function getTeamcityProjects(callback) {
-	setTimeout(() => {
-		callback(parseData());
-	}, DELAY);
+	$.ajax(DATA_URI).done((data) => {
+		callback(parseData(data));
+	});
 };
