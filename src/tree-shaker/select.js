@@ -133,7 +133,7 @@ class Select {
 				return selectRegion(
 					availableForSelection,
 					clicked,
-					lastClicked,
+					lastClicked
 				);
 			},
 			single: () => {
