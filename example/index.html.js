@@ -9,17 +9,19 @@ module.exports = ({ htmlWebpackPlugin }) => {
 
 	let result = `
 		<!doctype html>
-		<title>Tree Shaker</title>
-		<head>${styles}</head>
-		<meta charset="utf8" />
-		<form class="example-form">
+		<head>
+			<title>Tree Shaker</title>
+			<meta charset="utf-8" />
+			${styles}
+		</head>
+		<div class="example-form">
 			<h1>Tree Shaker Demo</h1>
 			<button type="button" class="ts-button example-button-teamcity">
 				Get mocked Teamcity Projects
 			</button>
 			or set random
 			<input
-					type="input"
+					type="text"
 					class="ts-input example-input-count"
 					placeholder="count"
 					value="10K"
@@ -40,7 +42,7 @@ module.exports = ({ htmlWebpackPlugin }) => {
 				Chosen nodes:
 			</h2>
 			<div id="tree-shaker" class="example-container"></div>
-		</form>
+		</div>
 	`;
 
 	if (options.environment === 'production') {
