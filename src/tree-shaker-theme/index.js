@@ -3,6 +3,7 @@ const $ = require('jquery');
 const classNames = require('./styles');
 const cn = require('./lib/classnames');
 const escapeHtml = require('./lib/escape-html');
+const chosen = require('./chosen-option');
 
 const { Tree } = require('tree-shaker');
 
@@ -59,23 +60,7 @@ const templates = {
 		},
 	},
 
-	chosen: {
-		getElement(option) {
-			const { data } = option.data.availableNode;
-			const name = escapeHtml(data.name);
-			const pad = getPad(option);
-
-			return $(`<div title="${name}">${pad} ${name}</div>`);
-		},
-
-		updateElement(option, $element) {
-			const { data } = option.data.availableNode;
-			const name = escapeHtml(data.name);
-			const pad = getPad(option);
-
-			return $element.html(`<div title="${name}">${pad} ${name}</div>`);
-		},
-	},
+	chosen,
 
 	inputFilter: {
 		getElement() {

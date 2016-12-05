@@ -5,6 +5,7 @@ require('./input.css');
 require('./button.css');
 require('./buttons.css');
 require('./style.css');
+require('./ancestors.css');
 
 module.exports = {
 	button: {

@@ -13,6 +13,7 @@
 	transition: background 0.15s, color 0.15s;
 	user-select: none;
 
+	position: relative;
 	white-space: nowrap;
 }
 
