@@ -6,7 +6,9 @@ const getIEVersion = require('./lib/get-ie-version');
 const getVirtualScrolling = require('./lib/get-virtual-scrolling');
 
 const DBLCLICK_TIMEOUT = 200;
-const IE_VERSION_SUPPORTS_USER_SELECT = 10;
+
+// BTW IE 10 selects parents nodes depsite of the user-select:none rule
+const IE_VERSION_SUPPORTS_USER_SELECT = 11;
 
 class Select {
 	constructor(props) {

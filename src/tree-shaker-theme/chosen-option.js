@@ -29,9 +29,9 @@ function getAncestorsAccordion(option) {
 	}
 
 	return visibleAncestors.reverse().map((ancestor) => {
-		return `<div class="${classNames.select.optionAncestor}">${
+		return `<span class="${classNames.select.optionAncestor}">${
 			escapeHtml(ancestor.data.name)
-		}</div>`;
+		}</span>`;
 	}).join('');
 }
 

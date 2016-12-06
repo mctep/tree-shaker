@@ -10,15 +10,25 @@
 }
 
 .ts-option-ancestor:before {
+	content: '';
+	text-align: center;
+	position: absolute;
+	right: -1px;
+	top: 4px;
+	width: 1px;
+	box-shadow: 0 0 0.5em 1.5em #fff;
+	height: 100%;
+	transition: box-shadow 0.15s;
+}
+
+.ts-option-ancestor:after {
 	content: '::';
 	text-align: center;
 	position: absolute;
 	right: 0px;
 	top: 0;
 	width: 1.5em;
-	box-shadow: inset -1.45em 0 0.1em #fff;
 	height: 100%;
-	transition: box-shadow 0.15s;
 }
 
 .ts-option-ancestor:hover {
@@ -26,10 +36,16 @@
 }
 
 .ts-option:hover .ts-option-ancestor:before {
-	box-shadow: inset -1.45em 0 0.1em #ccc;
+	box-shadow: 0 0 0.5em 1.5em #ccc;
+	/*box-shadow: inset -1.45em 0 0.1em #ccc;*/
 }
 
 .ts-option.ts-selected .ts-option-ancestor:before {
-	box-shadow: inset -1.45em 0 0.1em #3879d9;
+	box-shadow: 0 0 0.5em 1.5em #3879d9;
+	/*box-shadow: inset -1.45em 0 0.1em #3879d9;*/
 	/*background: #3879d9;*/
+}
+
+.ts-option:hover.ts-option-ancestor:hover:before {
+	box-shadow: none;
 }

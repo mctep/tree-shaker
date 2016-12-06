@@ -8,8 +8,9 @@ module.exports = ({ htmlWebpackPlugin }) => {
 	}
 
 	let result = `
-		<!doctype html>
+		<!DOCTYPE html>
 		<head>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 			<title>Tree Shaker</title>
 			<meta charset="utf-8" />
 			${styles}
