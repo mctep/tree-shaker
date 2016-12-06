@@ -53,7 +53,7 @@ class TreeShaker {
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
 			optionHeight: DEFAULT_OPTION_HEIGHT,
-			templates: this.props.templates.available,
+			templateOption: this.props.templates.availableOption,
 		});
 	}
 
@@ -76,17 +76,17 @@ class TreeShaker {
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
 			optionHeight: DEFAULT_OPTION_HEIGHT,
-			templates: this.props.templates.chosen,
+			templateOption: this.props.templates.chosenOption,
 		});
 	}
 
 	createMovingButtons() {
 		const { templates } = this.props;
 
-		this.$moveToChosenButton = templates.moveToChosenButton.getElement()
+		this.$moveToChosenButton = templates.moveToChosenButton()
 		.on('click', this.handleMoveToChosenClick);
 
-		this.$removeFromChosenButton = templates.removeFromChosenButton.getElement()
+		this.$removeFromChosenButton = templates.removeFromChosenButton()
 		.on('click', this.handleRemoveFromChosenClick);
 
 		this.refreshMoveToChosenButton();
@@ -99,9 +99,9 @@ class TreeShaker {
 		this.handleMoveUpClick = this.handleMoveUpClick.bind(this);
 		this.handleMoveDownClick = this.handleMoveDownClick.bind(this);
 
-		this.$moveUpButton = templates.moveUpButton.getElement()
+		this.$moveUpButton = templates.moveUpButton()
 		.on('click', this.handleMoveUpClick);
-		this.$moveDownButton = templates.moveDownButton.getElement()
+		this.$moveDownButton = templates.moveDownButton()
 		.on('click', this.handleMoveDownClick);
 
 		this.refreshMoveUpButton();
@@ -112,7 +112,7 @@ class TreeShaker {
 		const { templates } = this.props;
 
 		this.handleFilterInputChange = this.handleFilterInputChange.bind(this);
-		this.$filterInput = templates.inputFilter.getElement()
+		this.$filterInput = templates.inputFilter()
 		.on('keyup', this.handleFilterInputChange);
 	}
 

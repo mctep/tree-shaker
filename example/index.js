@@ -15,6 +15,10 @@ $('#tree-shaker').append(treeShaker.$element);
 
 treeShaker.updateHeight();
 
+getTeamcityProjects((nodes) => {
+	treeShaker.setNodes(nodes);
+});
+
 $('.example-button-teamcity').click(() => {
 	getTeamcityProjects((nodes) => {
 		treeShaker.setNodes(nodes);

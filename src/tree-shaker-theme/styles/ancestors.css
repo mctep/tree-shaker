@@ -1,0 +1,35 @@
+.ts-option-ancestor {
+	box-sizing: border-box;
+	display: inline-block;
+	overflow: hidden;
+	max-width: 3em;
+	vertical-align: top;
+	position: relative;
+	transition: max-width 0.3s;
+	padding-right: 1.5em;
+}
+
+.ts-option-ancestor:before {
+	content: '::';
+	text-align: center;
+	position: absolute;
+	right: 0px;
+	top: 0;
+	width: 1.5em;
+	box-shadow: inset -1.45em 0 0.1em #fff;
+	height: 100%;
+	transition: box-shadow 0.15s;
+}
+
+.ts-option-ancestor:hover {
+	max-width: 100%;
+}
+
+.ts-option:hover .ts-option-ancestor:before {
+	box-shadow: inset -1.45em 0 0.1em #ccc;
+}
+
+.ts-option.ts-selected .ts-option-ancestor:before {
+	box-shadow: inset -1.45em 0 0.1em #3879d9;
+	/*background: #3879d9;*/
+}

@@ -3,6 +3,7 @@ const $ = require('jquery');
 const classNames = require('./styles');
 const cn = require('./lib/classnames');
 const escapeHtml = require('./lib/escape-html');
+const chosenOption = require('./chosen-option');
 
 const { Tree } = require('tree-shaker');
 
@@ -41,85 +42,55 @@ function getInputHtml(props) {
 }
 
 const templates = {
-	available: {
-		getElement(option) {
-			const { data } = option;
-			const name = escapeHtml(data.name);
-			const pad = getPad(option);
+	availableOption: (option) => {
+		const { name } = option.data;
 
-			return $(`<div title="${name}">${pad} ${name}</div>`);
-		},
+		const $pad = $('<span></span>').html(getPad(option));
 
-		updateElement(option, $element) {
-			const { data } = option;
-			const name = escapeHtml(data.name);
-			const pad = getPad(option);
-
-			return $element.html(`<div title="${name}">${pad} ${name}</div>`);
-		},
+		return $('<div></div>')
+		.attr('title', name)
+		.text(name)
+		.prepend($pad)
+		.data('update', (updatedOption) => {
+			$pad.html(getPad(updatedOption));
+		});
 	},
 
-	chosen: {
-		getElement(option) {
-			const { data } = option.data.availableNode;
-			const name = escapeHtml(data.name);
-			const pad = getPad(option);
+	chosenOption,
 
-			return $(`<div title="${name}">${pad} ${name}</div>`);
-		},
-
-		updateElement(option, $element) {
-			const { data } = option.data.availableNode;
-			const name = escapeHtml(data.name);
-			const pad = getPad(option);
-
-			return $element.html(`<div title="${name}">${pad} ${name}</div>`);
-		},
+	inputFilter: () => {
+		return $(getInputHtml({
+			className: classNames.filter.input,
+			placeholder: 'Filter',
+		}));
 	},
 
-	inputFilter: {
-		getElement() {
-			return $(getInputHtml({
-				className: classNames.filter.input,
-				placeholder: 'Filter',
-			}));
-		},
+	moveDownButton: () => {
+		return $(getButtonHtml({
+			children: '↓',
+			className: classNames.buttonsSort.button,
+		}));
 	},
 
-	moveDownButton: {
-		getElement() {
-			return $(getButtonHtml({
-				children: '↓',
-				className: classNames.buttonsSort.button,
-			}));
-		},
+	moveToChosenButton: () => {
+		return $(getButtonHtml({
+			children: '→',
+			className: classNames.buttonsMove.button,
+		}));
 	},
 
-	moveToChosenButton: {
-		getElement() {
-			return $(getButtonHtml({
-				children: '→',
-				className: classNames.buttonsMove.button,
-			}));
-		},
+	moveUpButton: () => {
+		return $(getButtonHtml({
+			children: '↑',
+			className: classNames.buttonsSort.button,
+		}));
 	},
 
-	moveUpButton: {
-		getElement() {
-			return $(getButtonHtml({
-				children: '↑',
-				className: classNames.buttonsSort.button,
-			}));
-		},
-	},
-
-	removeFromChosenButton: {
-		getElement() {
-			return $(getButtonHtml({
-				children: '←',
-				className: classNames.buttonsMove.button,
-			}));
-		},
+	removeFromChosenButton: () => {
+		return $(getButtonHtml({
+			children: '←',
+			className: classNames.buttonsMove.button,
+		}));
 	},
 };
 

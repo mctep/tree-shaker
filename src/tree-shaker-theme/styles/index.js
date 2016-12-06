@@ -5,6 +5,7 @@ require('./input.css');
 require('./button.css');
 require('./buttons.css');
 require('./style.css');
+require('./ancestors.css');
 
 module.exports = {
 	button: {
@@ -39,6 +40,7 @@ module.exports = {
 	select: {
 		disabled: 'ts-disabled',
 		option: 'ts-option',
+		optionAncestor: 'ts-option-ancestor',
 		select: 'ts-select',
 		selected: 'ts-selected',
 	},
