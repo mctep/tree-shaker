@@ -17,13 +17,7 @@ class Select {
 
 		this.props = {};
 
-		const classNames = this.props.classNames = {
-			disabled: _.get(props, 'classNames.disabled', ''),
-			option: _.get(props, 'classNames.option', ''),
-			select: _.get(props, 'classNames.select', ''),
-			selected: _.get(props, 'classNames.selected', ''),
-		};
-
+		this.props.classNames = props.classNames;
 		this.props.optionHeight = props.optionHeight;
 		this.props.onSelect = props.onSelect;
 		this.props.onDblclick = props.onDblclick;
@@ -36,16 +30,21 @@ class Select {
 		this.$topPad = $('<div></div>');
 		this.$bottomPad = $('<div></div>');
 
-		this.$element = $(`<div class="${classNames.select}"></div>`)
+		this.$element = $(`<div class="${this.props.classNames.select}"></div>`);
+
+		this.$container =
+		$(`<div class="${this.props.classNames.container}"></div>`)
 		.prepend(this.$topPad)
 		.append(this.$bottomPad)
 		.on('scroll', this.handleScroll)
 		.delegate('[data-option-id]', 'click', this.handleOptionClick);
 
+		this.$element.append(this.$container);
+
 		const ieVerstion = getIEVersion();
 
 		if (ieVerstion && ieVerstion < IE_VERSION_SUPPORTS_USER_SELECT) {
-			this.$element.on('selectstart', () => {
+			this.$container.on('selectstart', () => {
 				return false;
 			});
 		}
@@ -54,7 +53,7 @@ class Select {
 	}
 
 	updateHeight() {
-		this.height = this.$element.height();
+		this.height = this.$container.height();
 		this.handleScroll();
 	}
 
@@ -72,7 +71,7 @@ class Select {
 		const currentVisibleItems = this.visibleOptions;
 		const itemHeight = this.props.optionHeight;
 		const items = this.options;
-		const scrollTop = this.$element.scrollTop();
+		const scrollTop = this.$container.scrollTop();
 
 		const scrolling = getVirtualScrolling({
 			containerHeight,
@@ -203,7 +202,7 @@ class Select {
 		return $optionElement;
 	}
 
-	updateOptionElement(option, $element) {
+	updateOptionElement(option, $container) {
 		const { classNames } = this.props;
 		const { disabled, selected } = option.data;
 
@@ -213,20 +212,20 @@ class Select {
 			[classNames.selected]: selected,
 		});
 
-		$element.attr({ class: className });
+		$container.attr({ class: className });
 
-		const $children = $element.children();
+		const $children = $container.children();
 		const update = $children.data('update');
 
 		if (update) {
 			update(option);
 		}
 
-		return $element;
+		return $container;
 	}
 
 	removeHiddenElements() {
-		const $children = this.$element.children('[data-option-id]');
+		const $children = this.$container.children('[data-option-id]');
 		const childrenLength = $children.length;
 		const { visibleOptions } = this;
 
@@ -241,7 +240,7 @@ class Select {
 	}
 
 	addOrUpdateVisibleElements() {
-		const $children = this.$element.children('[data-option-id]');
+		const $children = this.$container.children('[data-option-id]');
 
 		const { visibleOptions } = this;
 		const visibleOptionsLength = visibleOptions.length;

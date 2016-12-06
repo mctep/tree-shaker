@@ -1,8 +1,43 @@
 .ts-select {
-	box-sizing: border-box;
-	border: 1px solid #ccc;
+	position: relative;
+}
+
+/*
+	hack for box-shadow.
+	if children have backround it overrides parent box-shadow.
+	so we use overlay element, set box-shadow to it
+	and set pointer-events in none for posibility to interact with children
+	elements. but this hack does not work in IE <= 10, so we use a fallback
+	http://stackoverflow.com/questions/13188828/force-box-shadow-on-top-of-content
+ */
+.ts-select:after {
+	position: absolute;
+	content: '';
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
 	box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+	border: 1px solid #ccc;
+	pointer-events: none;
+}
+
+/* only IE 9, 10 */
+@media screen and (min-width:0\0) {
+	.ts-select-container {
+		border: 1px solid #ccc;
+		box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+	}
+
+	.ts-select:after {
+		display: none;
+	}
+}
+
+.ts-select-container {
+	box-sizing: border-box;
 	overflow: auto;
+	height: 100%;
 }
 
 .ts-option {
@@ -29,9 +64,6 @@
 
 .ts-option.ts-disabled {
 	background: transparent;
-	color: #ccc;
-}
-
-.ts-option.ts-disabled:hover {
 	cursor: default;
+	color: #ccc;
 }

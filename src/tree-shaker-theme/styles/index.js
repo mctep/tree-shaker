@@ -38,6 +38,7 @@ module.exports = {
 	input: 'ts-input',
 
 	select: {
+		container: 'ts-select-container',
 		disabled: 'ts-disabled',
 		option: 'ts-option',
 		optionAncestor: 'ts-option-ancestor',
