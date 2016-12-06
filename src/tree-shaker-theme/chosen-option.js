@@ -1,58 +1,73 @@
 const _ = require('lodash');
 const $ = require('jquery');
 const escapeHtml = require('./lib/escape-html');
+const classNames = require('./styles');
 const { Tree } = require('tree-shaker');
 
-function getPad(option) {
-	const ancestors = Tree.getAncestors(option).reverse();
-
-	ancestors.shift();
-
+function getPad(ancestors) {
 	return _.map(ancestors, () => {
 		return '&nbsp;&nbsp;';
 	}).join('');
 }
 
 function getAncestorsAccordion(option) {
-	const ancestors = Tree.getAncestors(option);
+	const visibleAncestors = [];
 
-	ancestors.pop();
+	const parentId = option.parent && option.parent.id;
 
-	let html = '';
+	const ancestors = Tree.getAncestors(option.data.availableNode);
+	const ancestorsLength = ancestors.length;
 
-	ancestors.forEach((ancestor) => {
-		html += `<div class="ancestor">${escapeHtml(ancestor.data.name)}`;
-	});
+	for (let idx = 0; idx < ancestorsLength; idx += 1) {
+		const ancestor = ancestors[idx];
 
-	ancestors.forEach(() => {
-		html += '</div>';
-	});
+		if (ancestor.id === parentId) {
+			break;
+		}
 
-	return html;
+		visibleAncestors.push(ancestor);
+	}
+
+	return visibleAncestors.reverse().map((ancestor) => {
+		return `<div class="${classNames.select.optionAncestor}">${
+			escapeHtml(ancestor.data.name)
+		}</div>`;
+	}).join('');
 }
 
-function getElement(option) {
-	const { data } = option.data.availableNode;
+function chosenOptionTemplate(option) {
+	let chosenAncestors = Tree.getAncestors(option).reverse();
 
-	const name = escapeHtml(data.name);
-	const pad = getPad(option);
-
-	const acc = getAncestorsAccordion(option.data.availableNode);
-
-	return $(`<div title="${name}">${acc}${pad} ${name}</div>`);
-}
-
-function updateElement(option, $element) {
-	const { data } = option.data.availableNode;
-
-	const name = escapeHtml(data.name);
-	const pad = getPad(option);
-
-	const acc = getAncestorsAccordion(option.data.availableNode);
-
-	return $element.replaceWith(
-		$(`<div title="${name}">${acc}${pad} ${name}</div>`)
+	chosenAncestors.shift();
+	const { availableNode } = option.data;
+	const { name } = availableNode.data;
+	const $pad = $('<span></span>').html(getPad(chosenAncestors));
+	const $ancestors = $('<span></span>').html(
+		getAncestorsAccordion(option)
 	);
+
+	return $('<div></div>')
+	.attr('title', name)
+	.text(name)
+	.prepend($ancestors)
+	.prepend($pad)
+	.data('update', update);
+
+	function update(updatedOption) {
+		const updatedAncestors = Tree.getAncestors(updatedOption).reverse();
+
+		updatedAncestors.shift();
+		if (updatedAncestors.length === chosenAncestors.length) {
+			return;
+		}
+
+		chosenAncestors = updatedAncestors;
+
+		$pad.html(getPad(chosenAncestors));
+		$ancestors.html(
+			getAncestorsAccordion(updatedOption)
+		);
+	}
 }
 
-module.exports = { getElement, updateElement };
+module.exports = chosenOptionTemplate;

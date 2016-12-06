@@ -23,10 +23,9 @@ class Select {
 		};
 
 		this.props.optionHeight = props.optionHeight;
-		this.props.optionTemplate = props.optionTemplate;
 		this.props.onSelect = props.onSelect;
 		this.props.onDblclick = props.onDblclick;
-		this.props.templates = props.templates;
+		this.props.templateOption = props.templateOption;
 		this.props.getOptionById = props.getOptionById;
 
 		// it is needed because we use render as replacing html
@@ -197,7 +196,7 @@ class Select {
 		const $optionElement =
 		$(`<div class="${className}" data-option-id="${id}"></div>`);
 
-		$optionElement.append(this.props.templates.getElement(option));
+		$optionElement.append(this.props.templateOption(option));
 
 		return $optionElement;
 	}
@@ -213,7 +212,13 @@ class Select {
 		});
 
 		$element.attr({ class: className });
-		this.props.templates.updateElement(option, $element.children());
+
+		const $children = $element.children();
+		const update = $children.data('update');
+
+		if (update) {
+			update(option);
+		}
 
 		return $element;
 	}
@@ -248,7 +253,7 @@ class Select {
 			if ($child.length) {
 				$updated = this.updateOptionElement(option, $child);
 			} else {
-				$updated = this.getOptionElement(option, $child);
+				$updated = this.getOptionElement(option);
 			}
 
 			if (!$updated.prev().is($prevChild)) {

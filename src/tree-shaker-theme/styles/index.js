@@ -40,6 +40,7 @@ module.exports = {
 	select: {
 		disabled: 'ts-disabled',
 		option: 'ts-option',
+		optionAncestor: 'ts-option-ancestor',
 		select: 'ts-select',
 		selected: 'ts-selected',
 	},

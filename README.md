@@ -26,7 +26,7 @@ Require main script and basic theme to your page:
 	$('#tree-shaker').append(treeShaker.$element);
 	// it is need to update shaker height after applying to DOM
 	treeShaker.updateHeight();
-	
+
 	var nodes = [{
 		id: 'node_1',
 		title: 'Parent Node'
@@ -35,7 +35,7 @@ Require main script and basic theme to your page:
 		parentId: 'node_1',
 		title: 'Child Node'
 	}];
-	
+
 	treeShaker.setNodes(nodes);
 </script>
 ```
@@ -46,14 +46,12 @@ You can extend any element in `tree-shaker` by define your own theme or redefine
 
 ```js
 // redefine option template in available nodes list
-TreeShakerTheme.templates.available = {
-	getElement: function(option) {
-		return $(
-			'<div class="my-own-class"><img src="my-icon.png" />' +
-				option.data.title +
-			'</div>'
-		);
-	}
+TreeShakerTheme.templates.available = function(option) {
+	return $(
+		'<div class="my-own-class"><img src="my-icon.png" />' +
+			option.data.name +
+		'</div>'
+	);
 }
 ```
 
@@ -63,7 +61,7 @@ Also you can change any class for element used in `tree-shaker`:
 TreeShakerTheme.classNames.buttonsSort.container += ' my-button-sort-mix';
 ```
 
-You can see all [classNames](https://github.com/mctep/tree-shaker/blob/master/src/tree-shaker-theme/styles/index.js) and [templates](https://github.com/mctep/tree-shaker/blob/master/src/tree-shaker-theme/index.js) in theme source code. 
+You can see all [classNames](https://github.com/mctep/tree-shaker/blob/master/src/tree-shaker-theme/styles/index.js) and [templates](https://github.com/mctep/tree-shaker/blob/master/src/tree-shaker-theme/index.js) in theme source code.
 
 ## Development
 
