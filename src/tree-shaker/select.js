@@ -13,8 +13,8 @@ const getSelectionModeByEvent = require('./lib/get-selection-mode-by-event');
 
 const DBLCLICK_TIMEOUT = 200;
 
-// BTW IE 10 selects parents nodes depsite of the user-select:none rule
-const IE_VERSION_SUPPORTS_USER_SELECT = 11;
+// BTW IE 11- selects parents nodes depsite of the user-select:none rule
+const IE_VERSION_DOES_NOT_SUPPORT_USER_SELECT = 11;
 
 class Select {
 	constructor(props) {
@@ -49,7 +49,7 @@ class Select {
 
 		const ieVerstion = getIEVersion();
 
-		if (ieVerstion && ieVerstion < IE_VERSION_SUPPORTS_USER_SELECT) {
+		if (ieVerstion && ieVerstion <= IE_VERSION_DOES_NOT_SUPPORT_USER_SELECT) {
 			this.$container.on('selectstart', () => {
 				return false;
 			});
