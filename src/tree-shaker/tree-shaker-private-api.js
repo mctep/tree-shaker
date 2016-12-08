@@ -111,8 +111,7 @@ class TreeShakerPrivate {
 
 		this.handleFilterInputChange = this.handleFilterInputChange.bind(this);
 		this.$filterInput = templates.inputFilter()
-		.on('keyup', this.handleFilterInputChange);
-		this.$filterInput = templates.inputFilter()
+		.on('keyup', this.handleFilterInputChange)
 		.on('change', this.handleFilterInputChange);
 	}
 
