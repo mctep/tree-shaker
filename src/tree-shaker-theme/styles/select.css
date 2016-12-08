@@ -51,6 +51,8 @@
 
 	position: relative;
 	white-space: nowrap;
+	overflow: hidden;
+	max-width: 100%;
 }
 
 .ts-option:hover {
