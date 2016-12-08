@@ -112,13 +112,15 @@ class TreeShakerPrivate {
 		this.handleFilterInputChange = this.handleFilterInputChange.bind(this);
 		this.$filterInput = templates.inputFilter()
 		.on('keyup', this.handleFilterInputChange);
+		this.$filterInput = templates.inputFilter()
+		.on('change', this.handleFilterInputChange);
 	}
 
 	filterNodesByInputValue() {
 		const value = this.$filterInput.val();
 
 		if (this.lastFilterValule === value) {
-			return;
+			return false;
 		}
 
 		const reg = new RegExp(escapeRegexp(value), 'ig');
@@ -129,6 +131,8 @@ class TreeShakerPrivate {
 		});
 
 		this.lastFilterValule = value;
+
+		return true;
 	}
 
 	handleAvailableSelect() {
@@ -188,7 +192,9 @@ class TreeShakerPrivate {
 	}
 
 	handleFilterInputChange() {
-		this.refresh();
+		if (this.filterNodesByInputValue()) {
+			this.refresh();
+		}
 	}
 
 	handleChosenNodesChange() {
