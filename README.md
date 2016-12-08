@@ -22,7 +22,13 @@ Require main script and basic theme to your page:
 <div id="tree-shaker" style="height: 600px"></div>
 
 <script>
-	var treeShaker = new TreeShaker(TreeShakerTheme);
+	var treeShaker = new TreeShaker({
+		classNames: TreeShakerTheme.classNames,
+		templates: TreeShakerTheme.templates,
+		onOptionsChoose(function(chosenOptions) {
+			saveToStorage(chosenOptions);
+		});
+	});
 	$('#tree-shaker').append(treeShaker.$element);
 	// it is need to update shaker height after applying to DOM
 	treeShaker.updateHeight();
