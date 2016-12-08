@@ -114,6 +114,23 @@ class TreeShakerPrivate {
 		.on('keyup', this.handleFilterInputChange);
 	}
 
+	filterNodesByInputValue() {
+		const value = this.$filterInput.val();
+
+		if (this.lastFilterValule === value) {
+			return;
+		}
+
+		const reg = new RegExp(escapeRegexp(value), 'ig');
+
+		this.availableTree.forEach((node) => {
+			node.data.selected = false;
+			node.data.hidden = !node.data.name.match(reg);
+		});
+
+		this.lastFilterValule = value;
+	}
+
 	handleAvailableSelect() {
 		this.refreshMoveToChosenButton();
 	}
@@ -171,14 +188,6 @@ class TreeShakerPrivate {
 	}
 
 	handleFilterInputChange() {
-		const value = this.$filterInput.val();
-		const reg = new RegExp(escapeRegexp(value), 'ig');
-
-		this.availableTree.forEach((node) => {
-			node.data.selected = false;
-			node.data.hidden = !node.data.name.match(reg);
-		});
-
 		this.refresh();
 	}
 
@@ -220,6 +229,8 @@ class TreeShakerPrivate {
 		function isVisible(node) {
 			return !node.data.hidden;
 		}
+
+		this.filterNodesByInputValue();
 
 		this.availableSelect
 		.refresh(this.availableTree.filterWithAncestors(isVisible));
