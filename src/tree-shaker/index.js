@@ -52,6 +52,7 @@ class TreeShaker extends TreeShakerPrivateApi {
 	setNodes(nodes) {
 		this.availableTree = new Tree(nodes);
 		this.chosenTree = new Tree([]);
+		this.$filterInput.val('');
 	}
 
 	/**
