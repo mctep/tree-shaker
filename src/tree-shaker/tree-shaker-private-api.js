@@ -7,9 +7,6 @@ const escapeRegexp = require('./lib/escape-reg-exp');
 const { getNodesForSorting, moveUp, moveDown } = require('./lib/sorting-nodes');
 const serializeChosenTree = require('./lib/serialize-chosen-tree');
 
-// from default-theme/styles/select.css
-const DEFAULT_OPTION_HEIGHT = 24;
-
 function hasSomeSelectedNode(tree) {
 	if (!tree) {
 		return false;
@@ -50,7 +47,7 @@ class TreeShakerPrivate {
 			},
 			onDblclick: this.handleMoveToChosenClick,
 			onSelect: this.handleAvailableSelect,
-			optionHeight: DEFAULT_OPTION_HEIGHT,
+			optionHeight: this.props.optionHeight,
 			templateOption: this.props.templates.availableOption,
 		});
 	}
@@ -73,7 +70,7 @@ class TreeShakerPrivate {
 			},
 			onDblclick: this.handleRemoveFromChosenClick,
 			onSelect: this.handleChosenSelect,
-			optionHeight: DEFAULT_OPTION_HEIGHT,
+			optionHeight: this.props.optionHeight,
 			templateOption: this.props.templates.chosenOption,
 		});
 	}

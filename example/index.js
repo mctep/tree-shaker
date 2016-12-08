@@ -3,11 +3,11 @@ const getTeamcityProjects = require('./get-teamcity-projects');
 const generateRandomNodes = require('./generate-random-nodes');
 const storage = require('./storage');
 const TreeShaker = require('tree-shaker');
-const { classNames, templates } = require('tree-shaker-theme');
+const { classNames, templates, optionHeight } = require('tree-shaker-theme');
 
 require('./style.css'); // eslint-disable-line import/no-unassigned-import
 
-const treeShaker = new TreeShaker({ classNames, templates });
+const treeShaker = new TreeShaker({ classNames, optionHeight, templates });
 
 $('#tree-shaker').append(treeShaker.$element);
 treeShaker.updateHeight();

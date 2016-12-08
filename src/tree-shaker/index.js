@@ -14,6 +14,8 @@ class TreeShaker extends TreeShakerPrivateApi {
 	 * @param {Object} props TreeShaker options
 	 * @param {Object} props.templates Templates for TreeShaker elements
 	 * @param {Object} props.classNames Class names for TreeShaker elements
+	 * @param {Object} props.optionHeight Height of select option element
+	 *  It uses virtual scrolling so fixed item height is slight limitation
 	 * @return {TreeShaker} TreeShaker instance
 	 */
 	constructor(props) {
@@ -21,6 +23,7 @@ class TreeShaker extends TreeShakerPrivateApi {
 
 		superProps.templates = props.templates;
 		superProps.classNames = props.classNames;
+		superProps.optionHeight = props.optionHeight;
 
 		super(superProps);
 

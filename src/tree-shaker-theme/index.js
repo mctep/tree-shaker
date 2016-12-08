@@ -97,7 +97,6 @@ const templates = {
 
 module.exports = {
 	classNames,
-	getButtonHtml,
-	getInputHtml,
+	optionHeight: 24,
 	templates,
 };

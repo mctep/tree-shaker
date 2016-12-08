@@ -25,10 +25,9 @@ Require main script and basic theme to your page:
 	var treeShaker = new TreeShaker({
 		classNames: TreeShakerTheme.classNames,
 		templates: TreeShakerTheme.templates,
-		onOptionsChoose(function(chosenOptions) {
-			saveToStorage(chosenOptions);
-		});
+		optionHeight: TreeShakerTheme.optionHeight
 	});
+
 	$('#tree-shaker').append(treeShaker.$element);
 	// it is need to update shaker height after applying to DOM
 	treeShaker.updateHeight();
@@ -41,6 +40,10 @@ Require main script and basic theme to your page:
 		parentId: 'node_1',
 		title: 'Child Node'
 	}];
+
+	treeShaker.onChosenNodesChange(function(chosenNodes) {
+		saveToStorage(chosenNodes);
+	});
 
 	treeShaker.setNodes(nodes);
 </script>
