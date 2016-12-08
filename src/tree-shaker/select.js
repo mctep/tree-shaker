@@ -1,9 +1,15 @@
+/* eslint max-lines:["error", 500] */
 const _ = require('lodash');
 const $ = require('jquery');
 const selectRegion = require('./lib/select-region');
 const cn = require('./lib/classnames');
 const getIEVersion = require('./lib/get-ie-version');
 const getVirtualScrolling = require('./lib/get-virtual-scrolling');
+const {
+	getScrollForAboveItem,
+	getScrollForBelowItem,
+} = require('./lib/get-scroll-for-item');
+const getSelectionModeByEvent = require('./lib/get-selection-mode-by-event');
 
 const DBLCLICK_TIMEOUT = 200;
 
@@ -57,13 +63,47 @@ class Select {
 		this.handleScroll();
 	}
 
-	refresh(options) {
-		this.options = options || [];
-		this.visibleOptions = [];
-		this.lastClicked = null;
-		this.bottomPadHeight = 0;
-		this.topPadHeight = 0;
-		this.updateScrolling();
+	moveSelectedOptionAboveIfInvisible() {
+		const selectedOption = _.find(this.options, (option) => {
+			return option.data.selected;
+		});
+
+		if (!selectedOption) {
+			return;
+		}
+
+		const scrollTop = getScrollForAboveItem({
+			item: selectedOption,
+			itemHeight: this.props.optionHeight,
+			items: this.options,
+			visibleItems: this.visibleOptions,
+		});
+
+		if (scrollTop !== null) {
+			this.$container.scrollTop(scrollTop);
+		}
+	}
+
+	moveSelectedOptionBelowIfInvisible() {
+		const selectedOption = _.findLast(this.options, (option) => {
+			return option.data.selected;
+		});
+
+		if (!selectedOption) {
+			return;
+		}
+
+		const scrollTop = getScrollForBelowItem({
+			containerHeight: this.height,
+			item: selectedOption,
+			itemHeight: this.props.optionHeight,
+			items: this.options,
+			visibleItems: this.visibleOptions,
+		});
+
+		if (scrollTop !== null) {
+			this.$container.scrollTop(scrollTop);
+		}
 	}
 
 	updateScrolling() {
@@ -85,11 +125,7 @@ class Select {
 			return null;
 		}
 
-		const {
-			bottomPadHeight,
-			topPadHeight,
-			visibleItems,
-		} = scrolling;
+		const { bottomPadHeight, topPadHeight, visibleItems } = scrolling;
 
 		this.bottomPadHeight = bottomPadHeight;
 		this.topPadHeight = topPadHeight;
@@ -160,7 +196,7 @@ class Select {
 			},
 		};
 
-		const mode = selectMode();
+		const mode = getSelectionModeByEvent(event);
 		const selector = selectors[mode];
 
 		selector();
@@ -169,18 +205,6 @@ class Select {
 
 		if (dblclicked && mode === 'single') {
 			this.props.onDblclick();
-		}
-
-		function selectMode() {
-			if (event.shiftKey) {
-				return 'region';
-			}
-
-			if (_.some([event.ctrlKey, event.metaKey, event.altKey])) {
-				return 'toggle';
-			}
-
-			return 'single';
 		}
 	}
 
@@ -263,6 +287,15 @@ class Select {
 
 			$prevChild = $updated;
 		}
+	}
+
+	refresh(options) {
+		this.options = options || [];
+		this.visibleOptions = [];
+		this.lastClicked = null;
+		this.bottomPadHeight = 0;
+		this.topPadHeight = 0;
+		this.updateScrolling();
 	}
 
 	render() {

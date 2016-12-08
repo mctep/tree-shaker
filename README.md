@@ -75,5 +75,5 @@ You can see all [classNames](https://github.com/mctep/tree-shaker/blob/master/sr
 git clone https://github.com/mctep/tree-shaker.git
 cd tree-shaker
 npm install
-npm start
+npm start -- --port=8080
 ```

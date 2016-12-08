@@ -175,6 +175,7 @@ class TreeShakerPrivate {
 		if (moveUp(nodes)) {
 			this.refresh();
 			this.handleChosenNodesChange();
+			this.chosenSelect.moveSelectedOptionAboveIfInvisible();
 		}
 	}
 
@@ -188,6 +189,7 @@ class TreeShakerPrivate {
 		if (moveDown(nodes)) {
 			this.refresh();
 			this.handleChosenNodesChange();
+			this.chosenSelect.moveSelectedOptionBelowIfInvisible();
 		}
 	}
 
