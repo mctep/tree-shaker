@@ -1,14 +1,11 @@
 const $ = require('jquery');
-
 const getTeamcityProjects = require('./get-teamcity-projects');
 const generateRandomNodes = require('./generate-random-nodes');
 const storage = require('./storage');
-
 const TreeShaker = require('tree-shaker');
 const { classNames, templates } = require('tree-shaker-theme');
 
-// eslint-disable-next-line import/no-unassigned-import
-require('./style.css');
+require('./style.css'); // eslint-disable-line import/no-unassigned-import
 
 const treeShaker = new TreeShaker({ classNames, templates });
 
@@ -17,6 +14,8 @@ treeShaker.updateHeight();
 loadTeamcityNodes();
 
 $('.example-button-teamcity').click(loadTeamcityNodes);
+
+// load random nodes
 $('.example-button-have-fun').click(() => {
 	const value = $('.example-input-count').val();
 	const count = parseInt(value.replace(/K/g, '000'), 10);
@@ -27,7 +26,6 @@ $('.example-button-have-fun').click(() => {
 		treeShaker.refresh();
 	}
 });
-
 
 function getStoredChosenNodes() {
 	try {
